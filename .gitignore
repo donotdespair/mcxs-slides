@@ -37,3 +37,10 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+*.nav
+*.aux
+*.log
+*.out
+*.snm
+*.gz
+*.toc
