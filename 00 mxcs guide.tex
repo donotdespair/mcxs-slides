@@ -1,0 +1,439 @@
+\documentclass[10pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{natbib}
+\usepackage{nopageno}
+\usepackage{hyperref}
+\hypersetup{linkcolor=blue,citecolor=blue,filecolor=black,urlcolor=blue} 
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{color}
+\usepackage[top=1cm, bottom=2cm, left=1cm, right=1cm]{geometry}
+\usepackage[none]{hyphenat}
+%\usepackage{changepage}
+\usepackage{fancyhdr}
+\usepackage{cmbright}
+\usepackage{enumitem}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%\newcommand{\helv}{\fontfamily{pag}\fontsize{10}{11}\selectfont}
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+\lfoot{\rule{5cm}{.1pt}\\  Tomasz Wo\'zniak $\bullet$ e-mail: \href{mailto:tomasz.wozniak@unimelb.edu.au}{tomasz.wozniak@unimelb.edu.au} $\bullet$ website: \href{https://github.com/donotdespair}{github.com/donotdespair}\hspace{4cm} \thepage}
+
+
+
+\begin{document}
+
+
+%\begin{center}
+%\large
+%Macroeconometrics - ECOM90007, ECOM40003 \\
+%\Large \textbf{Subject Guide - Semester 1, 2019} \\
+%{\large by Tomasz Wo\'zniak}\\ 
+%\end{center}
+
+
+\bigskip\noindent\textbf{\LARGE Macroeconometrics: ECOM90007}
+
+\smallskip\noindent by Tomasz Wo\'zniak $\bullet$ Department of Economics $\bullet$  University of Melbourne
+
+\smallskip\noindent Semester 1, 2023
+
+\smallskip\noindent\rule{5cm}{.1pt}
+
+\normalsize
+\smallskip\noindent\textbf{Outline.} 
+
+\noindent Decision-making at central banks, economic governance institutions, and consulting firms relies on advanced empirical analyses of economic data. This subject facilitates working with a cutting-edge econometric methodology for empirical macroeconomic research. Topics covered include forecasting economic outcomes using large data sets, analysing the dynamic effects of structural shocks on the business cycle and the labour market, and forecasting CO2 emissions for the 21st century. They provide evidence-based background for shaping the economic policy of a country. Finally, the focus is on learning programming and project management skills that facilitate performing reproducible econometric analyses in \textbf{RStudio}, \textbf{R}, \textbf{Quarto}, \textbf{git}, and \textbf{GitHub}.
+
+\bigskip\begin{multicols}{2}
+
+\vspace{0.3cm}\noindent\textbf{Contact Details.} 
+
+\smallskip\indent Tomasz Wo\'zniak 
+
+\smallskip\indent email: \href{mailto:tomasz.wozniak@unimelb.edu.au}{tomasz.wozniak@unimelb.edu.au}\\
+\indent website: \href{https://github.com/donotdespair}{github.com/donotdespair}\\
+\indent office No.: 350, FBE building
+
+
+\bigskip\noindent\textbf{Lecture Times.}
+
+\smallskip\noindent In-person active learning sessions are scheduled on:
+
+\smallskip\indent Mondays 2:15 -- 3:45~pm, FBE 211 (Theatre 2) \\
+\indent Tuesdays 3:45 -- 5:15~pm, FBE 221 (Theatre 4)
+
+\smallskip\noindent Attendance is monitored
+
+\bigskip\noindent\textbf{Consultations.} 
+
+\smallskip\indent Mondays, 4 -- 5 pm FBE 350
+
+
+\bigskip\noindent\textbf{Subject Resources.}
+
+\smallskip\noindent All subject resources will be made available on Canvas and include:
+\begin{itemize}[itemsep=0pt]
+\item Lecture slides
+\item R files for the reproduction of results from the lectures
+\item Online textbook by Tomasz
+\item Online repositories with lecture materials
+\item Template repository for the research project
+\item \textit{Introduction to R} Canvas module and other resources for learning R
+\end{itemize}
+
+
+\bigskip\noindent\textbf{Introduction to R.} 
+
+\smallskip\noindent The objective of the complementary four sessions is to facilitate the beginning of working and computer programming with R. 
+
+\smallskip\noindent The sessions are available online via a separate Canvas module that is not graded. 
+
+\smallskip\noindent Session 1: Introduction to R
+
+\smallskip\noindent Session 2: Basic programming in R
+
+\smallskip\noindent Session 3: Numerical integration
+
+\smallskip\noindent Session 4: Numerical optimisation
+
+\smallskip\noindent Session 5: Quarto documents
+
+\smallskip\noindent Session 6: Project development with git and GitHub
+
+\smallskip\noindent Session 7: Working with template repository on GitHub
+
+
+\vfill\null
+\columnbreak
+
+\noindent\textbf{Syllabus.}
+\begin{center}
+\begin{tabular}{c c l}
+\toprule 
+% & Topic \\
+%\midrule
+\multicolumn{3}{c}{\textbf{Concepts and Tools}}\\
+1 & 1  & What's macroeconometrics? \\
+   & 2  & Maximum likelihood estimation  \\
+2 & 3  & Bayesian estimation \\
+   & 4  & Numerical optimization and integration \\
+3 & 5  & Understanding unit-rooters \\[1ex]
+\multicolumn{3}{c}{\textbf{Macroeconomic Forecasting with Fat Data}}\\
+   & 6  & Vector Autoregressions \\
+4 & 7  & Bayesian VARs \\
+   & 8  & Forecasting with Bayesian VARs \\
+   &    & Test 1 \\
+5 & 9  & Forecasting with Large Bayesian VARs \\[1ex]
+\multicolumn{3}{c}{\textbf{Modeling Effects of Monetary Policy}}\\
+   & 10  & Structural Vector Autoregressions \\
+6 & 11  & Structural VAR tools \\
+   & 12  & Bayesian estimation of Structural VARs \\
+   &    & Test 2 \\
+7 & 13  & Modeling effects of monetary policy \\[1ex]
+\multicolumn{3}{c}{\textbf{Modeling Trend Inflation}}\\
+   & 14  & Unobserved Component models \\
+8 & 15  & Bayesian estimation using precision sampler \\
+   & 16  & Modeling trend inflation \\[1ex]
+\multicolumn{3}{c}{\textbf{Modeling Conditional Heteroskedasticity}}\\
+9 & 17  & Stochastic Volatility models \\
+   & 18  & Bayesian estimation using auxiliary mixtures \\[1ex]
+\multicolumn{3}{c}{\textbf{Topics in Climate Change}}\\
+10 & 19  & Forecasting CO$_2$ Emissions for the 21st Century \\
+    & 20  & Forecasting CO$_2$ Emissions for the 21st Century \\[1ex]
+\multicolumn{3}{c}{\textbf{Research Project Presentations}}\\
+11 & 21 & Presentations \\
+    & 22 & Presentations \\ [1ex]
+\multicolumn{3}{c}{\textbf{Lecturer's Research Presentation}}\\
+12 & 23  & \texttt{bsvars} package presentation\\
+   & 24  & Research presentation\\[1ex]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{multicols}
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+
+\begin{multicols}{2}
+
+\bigskip\noindent\textbf{Assessment.} 
+
+\smallskip\noindent The table presents an overview of the assessment. 
+
+\smallskip\noindent \textbf{RP} stands for \textbf{R}esearch \textbf{P}roject
+
+\begin{center}\begin{tabular}{ l l l }\toprule Week & Task & Grade \\[1ex]\midrule
+4 & \textbf{Test 1:} Concepts and Tools & 10\% \\ [1ex]
+5 & \textbf{RP1:} question, data, model, hypothesis & 10\% \\[1ex]
+6 & \textbf{Test 2:} Bayesian Estimation & 10\% \\[1ex]8 & \textbf{RP2:} estimation procedure and algorithm & 10\% \\10 & \textbf{RP3:} empirical analysis & 10\% \\[1ex]
+4--10 & Learning repository contribution & 10\% \\ [1ex]11 & \textbf{RP Presentation} &  10\% \\[1ex]12+ & \textbf{RP Final report} & 30\%   \\[1ex]\bottomrule\end{tabular}\end{center}
+
+\smallskip\noindent\textbf{Short Tests.}
+
+\smallskip\noindent Two 30-minute long tests are taking place in weeks 4 and  6. 
+
+\smallskip\noindent Each of them is worth 10\% of the final grade.
+
+\smallskip\noindent\textbf{Learning Repository Contribution.}
+
+\smallskip\noindent A contribution to the learning repository on the \textit{Bayesian estimation of autoregressions} is worth 10\% of the final grade.
+
+\smallskip\noindent\textbf{Research Project.}
+
+\smallskip\noindent A semester-long individual research project is worth 70\% of the final grade.
+
+\smallskip\noindent The development of the project throughout the semester includes small intermediate part submissions \textbf{PR1}--\textbf{PR3}. Each of these parts includes the submission of the proposal, providing feedback on peer submissions, and implementation of the received feedback from peers and lecturer.
+
+\smallskip\noindent The report includes the proposal of a model with original features, derivation and coding of the Bayesian estimation procedure, and empirical investigation answering the proposed question or hypothesis.
+
+\smallskip\noindent The report can be developed on one of three themes:
+\begin{enumerate}
+\item Forecasting with Bayesian VARs
+\item Assessing policy effects with Structural VARs
+\item Trend and cycle analysis with Unobserved Component models
+\end{enumerate}
+
+\smallskip\noindent The \textbf{Presentation} focuses on the preliminary empirical analyses.
+
+\smallskip\noindent the \textbf{RP} final submission is in the examination period.
+
+\vfill\null
+\columnbreak
+
+\noindent\textbf{Learning outcomes.}
+
+\noindent\smallskip At the completion of the subject students will be able to:\\[1ex]
+\textbf{LO1:} Develop original econometric methodology for applied macroeconomic analyses\\[1ex]
+\textbf{LO2:} Propose econometric techniques and models to verify hypotheses that inform fiscal or monetary policy\\[1ex]
+\textbf{LO3:} Derive Bayesian estimation procedure for the newly proposed macroeconometric model\\[1ex]
+\textbf{LO4:} Write computer programs in R that implement the derived estimation procedure\\[1ex]
+\textbf{LO5:} Apply the computer program in the forecasting or structural analyses of Australian macroeconomic data\\[1ex]
+\textbf{LO6:} Transparently create econometric data analysis using the newly proposed methodology in a fully reproducible report developed collaboratively
+
+
+\bigskip\noindent\textbf{Generic skills.}
+
+\noindent\smallskip At the completion of the subject students will also be able to:\\[1ex]
+\textbf{GS1:} Obtain and format data from the original sources in an automated workflow\\[1ex]
+\textbf{GS2:} Document the essential data properties and incorporate them in the econometric modelling\\[1ex]
+\textbf{GS3:} Handle statistical distributions of parameters and forecasted values to make the econometric analysis feasible\\[1ex]
+\textbf{GS4:} Apply linear algebra operations and basic statistical theory to facilitate model estimation, hypothesis verification, and reliable forecasting\\[1ex]
+\textbf{GS5:} Create visualisations of data and estimation results that inform economic interpretations \\[1ex]
+\textbf{GS6:} Use functional programming to implement econometric procedures\\[1ex]
+\textbf{GS7:} Propose economic interpretations based on the empirical evidence\\[1ex]
+\textbf{GS8:} Obtaining, providing, and implementing constructive and actionable feedback\\[1ex]
+\textbf{GS9:} Managing a programming and data analysis project using git and GitHub\\[1ex]
+\textbf{GS10:} Communicating research outcomes in plain language and using visualisations
+
+\end{multicols}
+
+
+%\small
+%\begin{center}
+%\begin{tabular}{ c l}
+%\toprule
+%Lecture & \textbf{Compulsory readings} and references \\
+%\midrule
+%\multicolumn{2}{c}{\textbf{Concepts and Tools}}\\[1ex]
+%1  & Sims (2012) Statistical Modeling of Monetary Policy and Its Effects, American Economic Review, 102 \\[1ex]
+%2  & Harris, Hurn, \& Martin (2012) Chapter 1: The Maximum Likelihood Principle, Econometric Modelling with Time Series  \\
+%  & Harris, Hurn, \& Martin (2012) Chapter 2: Properties of Maximum Likelihood Estimators, Econometric Modelling with Time Series  \\[1ex]
+%3  & \textbf{Greenberg (2008) Chapter 4: Prior Distributions, Introduction to Bayesian Econometrics} \\
+%& \textbf{Wo\'zniak (2022) Posterior derivations for a simple linear regression model
+%, Lecture Notes} \\[1ex]
+%4  & Harris, Hurn, \& Martin (2012) Chapter 3: Numerical Estimation Methods, Econometric Modelling with Time Series \\
+%& Greenberg (2008) Chapter 7: Simulation by MCMC Methods, Introduction to Bayesian Econometrics \\
+%\midrule
+%\multicolumn{2}{c}{\textbf{Unit Root Processes}}\\[1ex]
+%5  & Harris, Hurn, Martin (2012) Chapter 16: Nonstationary Distribution Theory, Econometric Modelling with Time Series \\[1ex]
+%6  & \textbf{Sims \& Uhlig (1991) Understanding Unit Rooters: A Helicopter Tour, Econometrica, 59} \\
+%& Phillips (1991) To Criticize the Critics: An Objective Bayesian Analysis of Stochastic Trends, Journal of Applied Econometrics \\[1ex]
+%\midrule
+%\multicolumn{2}{c}{\textbf{Macroeconomic Forecasting with Fat Data}}\\[1ex]
+%7  & Kilian \& L\"utkepohl (2017) Chapter 2: Vector Autoregressive Models, Structural Vector Autoregressive Analysis \\[1ex]
+%8  & \textbf{Wo\'zniak (2016) Bayesian Vector Autoregressions, Australian Economic Review, 49} \\[1ex]
+%& Doan, Litterman, Sims (1984) Forecasting and Conditional Projection Using Realistic Prior Distributions, Econometric Reviews \\[1ex]
+%9  & Karlsson (2013) Forecasting with Bayesian Vector Autoregression, Handbook of Economic Forecasting \\[1ex]
+%10  & Panagiotelis, Athanasopoulos, Hyndman, Jiang, Vahid (2019) Macroeconomic forecasting for Australia\\
+%& $\qquad$ using a large number of predictors, International Journal of Forecasting, 35 \\
+%& Ba\'nbura, Giannone \& Reichlin (2010) Large Bayesian Vector Auto Regressions, Journal of Applied Econometrics, 92 \\[1ex]
+%\midrule
+%\multicolumn{2}{c}{\textbf{Modeling Effects of Monetary Policy}}\\[1ex]
+%11  & \textbf{Kilian \& L\"utkepohl (2017) Chapter 8: Identification by Short-Run Restrictions, Structural Vector Autoregressive Analysis}\\[1ex]
+%12  & \textbf{Kilian \& L\"utkepohl (2017) Chapter 4: Structural VAR Tools, Structural Vector Autoregressive Analysis}\\[1ex]
+%13  & Rubio-Ram\'irez, Waggoner \& Zha (2010) Structural Vector Autoregressions: Theory of Identification and Algorithms\\
+%& $\qquad$  for Inference, Review of Economic Studies, 77 \\[1ex]
+%14 & \textbf{Wo\'zniak (2019) Bayesian Structural VARs: Algorithms and Inference, Lecture Notes} \\
+%& Waggoner \& Zha (2003) A Gibbs sampler for structural vector autoregressions, Journal of Economic Dynamics \& Control, 28\\
+%& Waggoner \& Zha (2003) Likelihood preserving normalization in multiple equation models, Journal of Econometrics, 114\\[1ex]
+%15  & Dungey \& Pagan (2009) Extending a SVAR Model of the Australian Economy, Economic Record, 85 \\[1ex]
+%\midrule
+%\multicolumn{2}{c}{\textbf{Modeling Trend Inflation}}\\[1ex]
+%16 & \textbf{Wo\'zniak (2019) Bayesian estimation of simple Unobserved Component models using simulation smoother, Lecture Notes} \\
+%& Morley, Nelson, Zivot (2003) Why Are the Beveridge-Nelson and Unobserved-Components Decompositions of GDP so Different?\\
+%&$\qquad$ Review of Economics and Statistics, 85 \\[1ex]
+%17  & Chan \& Jeliazkov (2009) Efficient Simulation and Integrated Likelihood Estimation in State Space Models, International \\
+%& $\qquad$ Journal of Mathematical Modelling and Numerical Optimisation, 1 \\[1ex]
+%18  & \\
+%19  & Stock \& Watson (2016) Core Inflation and Trend Inflation, Review of Economics and Statistics, 96 \\
+%\midrule
+%\multicolumn{2}{c}{\textbf{Modeling Conditional Heteroskedasticity}}\\[1ex]
+%20  &  Omori, Chib, Shephard \& Nakajima (2007) Stochastic Volatility with Leverage: Fast and Efficient Likelihood Inference, \\
+%& $\qquad$ Journal of Econometrics, 140 \\[1ex]
+%21  & \textbf{Wo\'zniak (2019) Estimation of a Simple SV Model by Auxiliary Mixture and Precision Sampling, Lecture Notes} \\[1ex]
+%\midrule
+%\multicolumn{2}{c}{\textbf{Topics in Climate Change}}\\[1ex]
+%22  &  Raftery, Zimmer, Frierson, Startz, Liu (2017) Less than $2^{\circ}$C Warming by 2100 Unlikely, Nature Climate Change, 7 \\
+%23  &  \\[1ex]
+%%\multicolumn{2}{c}{\textbf{Lecturer's Research Presentation}}\\[1ex]
+%\midrule
+%24  & Wo\'zniak, Droumaguet (2021) Bayesian Assessment of Identifying Restrictions for Heteroskedastic Structural VARs \\[1ex]
+%\bottomrule
+%\end{tabular}
+%\end{center}
+
+\newpage
+
+\begin{multicols}{2}
+\small
+\bigskip\noindent\textbf{\large Academic Integrity.} 
+
+\smallskip\noindent\textbf{Academic Honesty}
+
+\smallskip\noindent The University maintains high academic standards in its courses and subjects and expects students to conduct themselves in a manner which is fair, honest and consistent with the principles of academic integrity, particularly when undertaking assessment and research. \href{http://academicintegrity.unimelb.edu.au/}{http://academicintegrity.unimelb.edu.au/}
+
+\smallskip\noindent\textbf{Referencing}
+
+\smallskip\noindent Each source used for a written piece of assessment must be referenced. This is to acknowledge that your material is not based entirely on your own ideas, but is based, in part, on the ideas, information, and evidence of others. This is desirable as you are attending University in order to learn from others.
+
+\smallskip\noindent You will be required to use the APA system or Harvard System of referencing. The library has prepared a website to help students correctly reference: 
+\href{http://www.library.unimelb.edu.au/recite}{http://www.library.unimelb.edu.au/recite}
+
+\smallskip\noindent It is important that all material you present for assessment is referenced correctly. Material that has not been referenced correctly may be considered to be plagiarised, and as such may be penalised. We will also look for evidence that material included in the bibliography has been used in the assignment. 
+
+\smallskip\noindent The Academic Skills Unit has produced resources to assist students with referencing\\ \href{https://services.unimelb.edu.au/academicskills/undergrads/top\_resources}{https://services.unimelb.edu.au/academicskills/undergrads/top\_resources}
+
+\smallskip\noindent The Library also provides advice on referencing:\\ \href{http://library.unimelb.edu.au/cite}{http://library.unimelb.edu.au/cite}
+
+
+
+
+
+
+
+
+\bigskip\noindent\textbf{\large University Services}
+
+\smallskip\noindent\textbf{Timetable}
+
+\smallskip\noindent MyTimetable is a class timetabling system that creates individual timetables for students based on submitted class preferences, ensuring everyone has an equitable opportunity of getting their preferred class timetable. You will use this system to create your class timetable prior to each study period.
+
+\smallskip\noindent By following a preference-based model, students who have other commitments, such as employment or carer responsibilities, or who are returning or living overseas during the timetabling period, aren?t disadvantaged by their limited availability. When allocating class timetables, MyTimetable also takes into consideration factors such as class size limits and potential clashes to ensure all students are equally accommodated. Further information is available on the web at \href{https://students.unimelb.edu.au/admin/class-timetable}{https://students.unimelb.edu.au/admin/class-timetable} 
+
+
+\smallskip\noindent\textbf{Stop 1: Connecting Students and Services}
+
+\smallskip\noindent Stop 1 is here to provide you with a range of support services throughout your university degree, from help with enrolment, administration and wellbeing to advice on building your skills and experiences. \href{https://students.unimelb.edu.au/stop1}{https://students.unimelb.edu.au/stop1}
+
+\smallskip\noindent\textbf{Academic Skills}
+
+\smallskip\noindent Academic Skills offers a range of workshops and resources to help you with study skills including researching, writing and referencing, presentation skills and preparing for exams.  Visit their website via \href{http://services.unimelb.edu.au/academicskills}{http://services.unimelb.edu.au/academicskills}
+
+\smallskip\noindent\textbf{Service Finder}
+
+\smallskip\noindent The University of Melbourne offers one of the most comprehensive student support networks in Australia. Use this site to locate a wide range of services \href{http://services.unimelb.edu.au/finder}{http://services.unimelb.edu.au/finder}
+
+\smallskip\noindent\textbf{Student Counselling}
+
+\smallskip\noindent Students attend counselling to talk about personal, emotional, or mental health issues which might be affecting their study and life. The University's Counselling and Psychological Services (CAPS) provides free, confidential, short-term professional counselling to currently enrolled students and staff. \href{https://services.unimelb.edu.au/counsel/individual}{https://services.unimelb.edu.au/counsel/individual}
+
+
+
+
+\smallskip\noindent\textbf{Student Equity and Disability Support}
+
+\smallskip\noindent Student Equity and Disability Support provides services for students who need ongoing support with their studies. They understand that adjustments to learning and assessment are sometimes required to allow all students to reach their full potential. Learn more about the services provided, how to find support and how to register for assistance. \href{http://services.unimelb.edu.au/student-equity}{http://services.unimelb.edu.au/student-equity}
+
+\smallskip\noindent\textbf{University of Melbourne Library Services}
+
+\smallskip\noindent As well as holding an extensive collection of books, ebooks, digital media and periodicals, library staff provide research guidance and support for students. \href{http://library.unimelb.edu.au/}{http://library.unimelb.edu.au/}
+
+\smallskip\noindent These Business and Economics Library Guides have been designed specifically for Faculty of Business and Economics staff and students. \href{http://unimelb.libguides.com/sb.php?subject_id=80310}{http://unimelb.libguides.com/sb.php?subject\_id=80310}
+
+
+
+
+
+\bigskip\noindent\textbf{\large Policy.} 
+
+\smallskip\noindent\textbf{Alternative Exam Arrangements (AEA)}
+
+\smallskip\noindent The definition of and eligibility requirements for alternative exam arrangements (AEA) can be found via \href{http://students.unimelb.edu.au/admin/alternate}{http://students.unimelb.edu.au/admin/alternate}
+
+%[Applicable only to the Department of Finance] Mid-semester examinations/tests are organised by the Department of Finance. If you wish to request alternative arrangements, email fbe-financeaeas@unimelb.edu.au with a copy of your approved Academic Adjustment Plan.
+
+\smallskip\noindent\textbf{Assessment and Results Policy}
+
+\smallskip\noindent The University?s assessment policy provides a framework for the design, delivery and implementation of assessment of students in award and non-award courses and subjects. Assessment is designed to contribute to high quality learning by students, and to allow for quality assurance and the maintenance of high academic standards. \href{https://policy.unimelb.edu.au/MPF1326}{https://policy.unimelb.edu.au/MPF1326}
+
+\smallskip\noindent\textbf{Assignment Extension}
+
+\smallskip\noindent Requests for an assignment extension should be submitted here: \href{http://go.unimelb.edu.au/yh9n}{http://go.unimelb.edu.au/yh9n}
+
+\smallskip\noindent Before completing this form, please read the Assignment Extension Policy, which can be found at:\\ \href{http://policy.unimelb.edu.au/MPF1326\#section-4.37}{http://policy.unimelb.edu.au/MPF1326\#section-4.37}
+
+
+
+
+
+\smallskip\noindent\textbf{Exam Policy}
+
+\smallskip\noindent The University requires that you are available for the entire examination period. Please see the University's Principal Dates via \href{https://www.unimelb.edu.au/dates\#2021}{https://www.unimelb.edu.au/dates\#2021} for the full annual calendar. Supplementary exams will not be provided in cases of absence during the examination period unless the absence is due to serious illness or other serious circumstances and a Special Consideration application is submitted and approved. 
+
+\smallskip\noindent\textbf{Information on Calculators in Examinations}
+
+\smallskip\noindent Effective from 1 January 2017, the approved calculator for all subjects is the Casio FX82 (any suffix). No equivalent models of calculators will be permitted in exams. 
+You are required to purchase your own calculator and are responsible for ensuring your calculator is in good working order with fresh batteries.  
+
+\smallskip\noindent\textbf{Plagiarism and Collusion}
+
+\smallskip\noindent Plagiarism (failure to cite your sources correctly and completely) and collusion (unauthorised collaboration with another person to prepare an assessment task) are considered academic misconduct and attract severe penalties. More information is available on the University's Academic Integrity website via \href{http://go.unimelb.edu.au/rha6}{http://go.unimelb.edu.au/rha6}
+
+\smallskip\noindent\textbf{Special Consideration}
+
+\smallskip\noindent As a student, you may experience extraordinary or unusual circumstances, or ongoing circumstances that adversely affect your academic performance. The University has policies in place to support students who are experiencing academic disadvantage. For more information, visit \href{http://students.unimelb.edu.au/admin/special}{http://students.unimelb.edu.au/admin/special}
+
+
+\end{multicols}
+
+
+
+
+\end{document}
+
+
+
+
+
+
