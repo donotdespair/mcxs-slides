@@ -1,0 +1,113 @@
+\documentclass[10pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{natbib}
+\usepackage{nopageno}
+\usepackage{hyperref}
+\hypersetup{linkcolor=blue,citecolor=blue,filecolor=black,urlcolor=blue} 
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{color}
+\usepackage[top=1cm, bottom=2cm, left=1cm, right=1cm]{geometry}
+\usepackage[none]{hyphenat}
+%\usepackage{changepage}
+\usepackage{fancyhdr}
+\usepackage{cmbright}
+\usepackage{enumitem}
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%\newcommand{\helv}{\fontfamily{pag}\fontsize{10}{11}\selectfont}
+%\rhead{Share\LaTeX}
+%\lhead{Guides and tutorials}
+\lfoot{\rule{5cm}{.1pt}\\  Tomasz Wo\'zniak $\bullet$ e-mail: \href{mailto:tomasz.wozniak@unimelb.edu.au}{tomasz.wozniak@unimelb.edu.au} $\bullet$ website: \href{https://github.com/donotdespair}{github.com/donotdespair}\hspace{4cm} \thepage}
+
+
+
+\begin{document}
+
+
+%\begin{center}
+%\large
+%Macroeconometrics - ECOM90007, ECOM40003 \\
+%\Large \textbf{Subject Guide - Semester 1, 2019} \\
+%{\large by Tomasz Wo\'zniak}\\ 
+%\end{center}
+
+
+\bigskip\noindent\textbf{\LARGE Macroeconometrics: ECOM90007}
+
+\smallskip\noindent by Tomasz Wo\'zniak $\bullet$ Department of Economics $\bullet$  University of Melbourne
+
+\smallskip\noindent Semester 1, 2023
+
+\smallskip\noindent\rule{5cm}{.1pt}
+
+\normalsize
+\bigskip\noindent\textbf{\Large Notes from the whiteboard.} 
+
+\smallskip\noindent These are the whiteboard notes from lecture 3.
+
+\bigskip\noindent\textbf{\large Definitions.} 
+
+\smallskip\noindent The transformations below can be understood as definitions, decompositions, and the way to construct the distributions.
+
+
+\smallskip\noindent Consider random variables $X$ and $Y$. 
+\begin{align*}
+p(X) &\text{ -- denotes a marginal distribution of } X \\
+p(X,Y) &\text{ -- denotes a joint distribution of } X \text{ and } Y\\
+p(X\mid Y) &\text{ -- denotes a conditional distribution of } X \text{ given } Y
+\end{align*}
+
+
+\smallskip\noindent The joint distribution can be decomposed as or be constructed from a conditional and marginal distribution
+\begin{align*}
+p(X,Y) & = p(X\mid Y) p(Y)\\
+&= p(Y\mid X)p(X)
+\end{align*}
+
+\smallskip\noindent If $X$ and $Y$ are independent then their joint distribution can be constructed as a product of marginal distributions:
+\begin{align*}
+p(X,Y) & = p(X) p(Y)
+\end{align*}
+
+\smallskip\noindent A conditional distribution is constructed as:
+\begin{align*}
+p(X\mid Y) & = \frac{p(X, Y)}{p(Y)}\\
+p(Y\mid X) & = \frac{p(X, Y)}{p(X)}
+\end{align*}
+
+\smallskip\noindent Marginal distributions can be constructed as:
+\begin{align*}
+p(X) & = \frac{p(X, Y)}{p(Y\mid X)}\\
+&= \int p(X,Y)dY\\
+p(Y) & = \frac{p(X, Y)}{p(X\mid Y)}\\
+&= \int p(X,Y)dX
+\end{align*}
+
+\bigskip\noindent\textbf{\large Expected values.} 
+
+\smallskip\noindent 
+\begin{align*}
+E(X) & = \int Xp(X)dX\\
+E(X\mid Y) & = \int Xp(X\mid Y)dX\\
+E\left(X^2\right) & = \int X^2p(X)dX\\
+E(f(X)) & = \int f(X)p(X)dX
+\end{align*}
+
+\smallskip\noindent\textbf{Task.} Using the formulae above write down how you would compute/construct the variance of $X$, $Var(X)$.
+
+\end{document}
+
+
+
+
+
+
