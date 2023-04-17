@@ -1,0 +1,747 @@
+\documentclass[notes,blackandwhite,mathsans,usenames,dvipsnames]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{animate}
+\usepackage{changepage}
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\usefonttheme{default}
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=0.97\paperwidth,ht=2.25ex,dp=2ex,right]{}
+{\color{mcxs2} \insertframenumber{} / \inserttotalframenumber}
+  \end{beamercolorbox}}%
+}
+
+
+
+
+
+
+\definecolor{mcxs1}{HTML}{05386B}
+\definecolor{mcxs2}{HTML}{379683}
+\definecolor{mcxs3}{HTML}{5CDB95}
+\definecolor{mcxs4}{HTML}{8EE4AF}
+\definecolor{mcxs5}{HTML}{EDF5E1}
+\setbeamercolor{frametitle}{fg=mcxs2}
+\AtBeginDocument{\color{mcxs1}}
+
+%\setbeamercolor{itemize text}{fg=mcxs5}
+\setbeamercolor{itemize item}{fg=mcxs1}
+\setbeamercolor{itemize subitem}{fg=mcxs2}
+\setbeamercolor{enumerate item}{fg=mcxs1}
+\setbeamercolor{description item}{fg=mcxs1}
+
+\setbeamertemplate{itemize item}[triangle]
+\setbeamertemplate{itemize subitem}[circle]
+
+
+
+
+
+
+\begin{document}
+%\fontfamily{pag}\selectfont
+%\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\vspace{1cm}
+\begin{tabular}{rl}
+&\textbf{\LARGE\color{mcxs1} Macroeconometrics}\\[8ex]
+\textbf{\Large Lecture 7}&\textbf{\Large\color{mcxs2}Vector Autoregressions}\\[19ex]
+&\textbf{Tomasz Wo\'zniak}\\[1ex]
+&{\small\color{mcxs5} Department of Economics}\\
+&{\small\color{mcxs5}University of Melbourne}
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\vspace{1cm}\textbf{\color{mcxs1} Vector autoregressions}
+
+\bigskip\textbf{\color{mcxs2}Properties}
+
+\bigskip\textbf{\color{mcxs2}Granger causality}
+
+\bigskip\textbf{\color{mcxs2}Maximum likelihood estimation}
+
+\small
+\vspace{1cm}Useful reading: \\ \footnotesize
+\smallskip{\color{mcxs1}Kilian \& L\"utkepohl (2017) Chapter 2: Vector Autoregressive Models, Structural Vector Autoregressive Analysis}
+
+\end{frame}
+}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\bigskip\textbf{\color{mcxs1}Objectives.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs1}To introduce vector autoregressions and their properties}
+\item {\color{mcxs1}To derive unconditional moments of the process}
+\item {\color{mcxs1}To derive maximum likelihood estimator of the parameters and to understand its properties}
+\end{itemize}
+
+\bigskip\textbf{\color{mcxs2}Learning outcomes.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs2}Presenting the dynamic properties of the process}
+\item {\color{mcxs2}Applying algebraic transformations to derive interpretable matrix-valued results}
+\item {\color{mcxs2}To apply derivatives wrt matrices in optimisation problems}
+\end{itemize}
+
+\end{frame}
+}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\centering
+\bigskip\begin{tabular}{c l}
+\toprule 
+\multicolumn{2}{c}{\textbf{Macroeconomic Forecasting with Fat Data}}\\
+7  & Vector Autoregressions \\
+8  & Bayesian VARs \\
+9  & Forecasting with Bayesian VARs \\
+10  & Forecasting with Large Bayesian VARs \\[1ex]
+\bottomrule
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+%\FlushLeft
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Vector} {\color{mcxs1}autoregressions}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+\begin{frame}{Vector autoregressions}
+
+\textbf{VAR($p$) model.}
+\begin{align*}
+y_t &= \mu_0 + A_1 y_{t-1} + \dots + A_p y_{t-p} + \epsilon_t\\
+\epsilon_t|Y_{t-1} &\sim iid\left(\mathbf{0}_N,\Sigma\right)
+\end{align*}
+
+\small
+\bigskip{\color{mcxs2}for} $t=1,\dots,T${\color{mcxs2}, where :}
+\begin{description}
+\item[$y_t$] {\color{mcxs2}--} $N\times 1$ {\color{mcxs2}vector of observations at time} $t$
+\item[$\mu_0$] {\color{mcxs2}--} $N\times 1$ {\color{mcxs2}vector of constant terms}
+\item[$A_i$] {\color{mcxs2}--} $N\times N$ {\color{mcxs2}matrix of {\color{mcxs1}autoregressive} slope parameters}
+\item[$\epsilon_t $] {\color{mcxs2}--} $N\times 1$ {\color{mcxs2}vector of error terms -- a multivariate white noise process}
+\item[$Y_{t-1} $] {\color{mcxs2}-- information set collecting observations on} $y$ {\color{mcxs2}up to time} $t-1$
+\item[$\Sigma$] {\color{mcxs2}--}$N\times N$ {\color{mcxs2}covariance matrix of the error term}
+\end{description}
+\end{frame}
+
+
+
+\begin{frame}{Vector autoregressions}
+
+\textbf{A bivariate VAR($p$) model.}\footnotesize
+\begin{align*} 
+\begin{bmatrix} y_{1.t} \\ y_{2.t} \end{bmatrix}
+&= \begin{bmatrix} \mu_{0.1} \\ \mu_{0.2} \end{bmatrix} + \begin{bmatrix} A_{1.11} & A_{1.12} \\ A_{1.21} & A_{1.22} \end{bmatrix}  \begin{bmatrix} y_{1.t-1} \\ y_{2.t-1} \end{bmatrix} + \dots
++ \begin{bmatrix} A_{p.11} & A_{p.12} \\ A_{p.21} & A_{p.22}   \end{bmatrix} \begin{bmatrix} y_{1.t-p} \\ y_{2.t-p} \end{bmatrix} + \begin{bmatrix} \epsilon_{1.t} \\ \epsilon_{2.t}  \end{bmatrix}\\[2ex]
+&= \begin{bmatrix} 
+\mu_{0.1}  + A_{1.11} y_{1.t-1} +  A_{1.12}y_{2.t-1} + \dots + A_{p.11}y_{1.t-p} + A_{p.12}y_{2.t-p} + \epsilon_{1.t}\\ 
+\mu_{0.2} + A_{1.21}y_{1.t-1} + A_{1.22}y_{2.t-1} + \dots + A_{p.21}y_{1.t-p} + A_{p.22}y_{2.t-p}+ \epsilon_{2.t}
+\end{bmatrix} 
+\end{align*} 
+
+\end{frame}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+%\FlushLeft
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Vector autoregressions} {\color{mcxs2}properties}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+\begin{frame}{Vector autoregressions: notation using lag polynomial}
+
+\begin{align*}
+y_t &= \mu_0 + A_1 y_{t-1} + \dots + A_p y_{t-p} + \epsilon_t\\
+y_t - A_1 y_{t-1} - \dots - A_p y_{t-p} &= \mu_0 + \epsilon_t\\
+\left(I_N - A_1 L - \dots - A_p L^p\right)y_t &= \mu_0 + \epsilon_t\\
+A\left(L\right)y_t &= \mu_0 + \epsilon_t
+\end{align*}
+
+\bigskip\textbf{Stationarity condition for the VAR($p$) process.}
+$$ \det\left(A\left(z\right)\right) = 0 \qquad|z|> 1 \quad\forall z\in\mathbb{C} $$
+
+{\color{mcxs2}The} VAR($p$) {\color{mcxs2}process is {\color{mcxs1}stationary} if the roots of the characteristic polynomial are outside of the complex unit circle.}
+
+\bigskip$\det(X)$ {\color{mcxs2}is a determinant of matrix} $X$.
+
+\end{frame}
+
+
+
+\begin{frame}{Vector autoregressions: VAR(1) representation}
+
+$$ Y_t = \mathbf{m} + \mathbf{A} Y_{t-1} + E_t $$
+
+$$ \underset{\color{mcxs2}(Np\times 1)}{Y_t} = \begin{bmatrix} y_t \\ y_{t-1} \\ \vdots \\ y_{t-p+1} \end{bmatrix} \qquad \underset{\color{mcxs2}(Np\times 1)}{\mathbf{m}} = \begin{bmatrix} \mu_0 \\ \mathbf{0}_N \\ \vdots \\ \mathbf{0}_N \end{bmatrix} \qquad \underset{\color{mcxs2}(Np\times 1)}{E_t} = \begin{bmatrix} \epsilon_t \\ \mathbf{0}_N \\ \vdots \\ \mathbf{0}_N \end{bmatrix}$$
+
+
+$$ \underset{\color{mcxs2}(Np\times Np)}{\mathbf{A}} = \begin{bmatrix} A_1 & A_2 & \cdots & A_{p-1} & A_p \\ I_N & \mathbf{0} & \cdots & \mathbf{0} & \mathbf{0} \\ \mathbf{0} & I_N & \cdots & \mathbf{0} & \mathbf{0} \\ \vdots & \vdots & \ddots & \vdots & \vdots \\ \mathbf{0} & \mathbf{0} & \cdots & I_N & \mathbf{0}  \end{bmatrix}  $$
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Vector autoregressions: VAR(1) representation}
+
+$$ Y_t = \mathbf{m} + \mathbf{A} Y_{t-1} + E_t $$
+
+\bigskip {\color{mcxs2}Transform the model back to} VAR($p$) {\color{mcxs2}representation using matrix}
+$$ \underset{\color{mcxs2}(N\times Np)}{J} = \begin{bmatrix} I_n & \mathbf{0}_{N\times N(p-1)} \end{bmatrix} $$
+
+\bigskip$$ JY_t = y_t \qquad J\mathbf{m} = \mu_0 \qquad  JE_t = \epsilon_t $$
+
+$$ J\mathbf{A} Y_{t-1} = A_1 y_{t-1} + \dots + A_p y_{t-p} $$
+
+\end{frame}
+
+
+\begin{frame}{Vector autoregressions: unconditional moments}
+
+\textbf{Stationarity condition.}
+$$ \det(I_{Np} - \mathbf{A}z) = 0 \qquad\text{for } |z|>1 \quad\forall z\in\mathbb{C} $$
+
+\smallskip {\color{mcxs2}Assume stationarity}
+
+\bigskip\textbf{Unconditional mean.}
+\begin{align*}
+\mathbb{E}[Y_t] &= \mathbf{m} + \mathbf{A} \mathbb{E}[Y_{t-1}] + \mathbb{E}[E_t]\\
+&\overset{LIE}{=} \mathbf{m} + \mathbf{A} \mathbb{E}[Y_{t-1}] \\
+(I_{Np} - \mathbf{A})\mathbb{E}[Y_t] &= \mathbf{m} \qquad{\color{mcxs2}\text{-- by stationarity }\mathbb{E}[Y_t] = \mathbb{E}[Y_{t-1}]}\\[2ex]
+\mathbb{E}[Y_t] &= (I_{Np} - \mathbf{A})^{-1}\mathbf{m} = \mathbf{M}\\[2ex]
+\mu = \mathbb{E}[y_t] &= \mathbb{E}[JY_t]= J\mathbb{E}[Y_t]= J\mathbf{M} = J(I_{np} - \mathbf{A})^{-1}\mathbf{m}
+\end{align*}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Vector autoregressions: unconditional moments}
+
+{\color{mcxs2}Assume stationarity}
+
+\bigskip\textbf{Autocovariances.}
+\begin{align*}
+\underset{\color{mcxs2}N\times N}{\gamma_s} &= \mathbb{E}\left[(y_t - \mu)(y_{t-s} - \mu)'\right]\\[2ex]
+\gamma_s &\neq \gamma_s' \qquad\text{\color{mcxs2}-- an asymmetric matrix}\\
+\gamma_s &= \gamma_{-s}' \\[2ex]
+\underset{\color{mcxs2}Np\times Np}{\Gamma_s} &= \mathbb{E}\left[\left(Y_t - \mathbf{M}\right)\left(Y_{t-s} - \mathbf{M}\right)'\right]\\[2ex]
+\Gamma_s &\neq \Gamma_s' \qquad\text{\color{mcxs2}-- an asymmetric matrix}\\
+\Gamma_s &= \Gamma_{-s}' \\[2ex]
+\gamma_s &= J\Gamma_s J' 
+\end{align*}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Vector autoregressions: unconditional moments }
+\small
+
+\textbf{Autocovariances.}
+\begin{description}
+\item[Step 1:] {\color{purple}Write} {\color{mcxs2}the intercept as} $\mathbf{m} = \left(I_{np} - \mathbf{A}\right)\mathbf{M}$ {\color{mcxs2}to rewrite}
+$$ \left(Y_t - \mathbf{M}\right) = \mathbf{A}\left(Y_{t-1} - \mathbf{M}\right) + E_t $$ 
+\item[Step 2:] {\color{mcxs1}Multiply} {\color{mcxs2}by} $\left(Y_{t-s} - \mathbf{M}\right)'$
+\end{description}
+$$ \left(Y_t - \mathbf{M}\right)\left(Y_{t-s} - \mathbf{M}\right)' = \mathbf{A}\left(Y_{t-1} - \mathbf{M}\right)\left(Y_{t-s} - \mathbf{M}\right)' + E_t\left(Y_{t-s} - \mathbf{M}\right)' $$ 
+\begin{description}
+\item[Step 3:] {\color{mcxs2}Take the expectations}
+$$ \Gamma_s = \mathbf{A}\Gamma_{s-1} + \mathbb{E}\left[E_t\left(Y_{t-s} - \mathbf{M}\right)' \right] $$ 
+\item[Step 4:] {\color{purple}Solve} {\color{mcxs2}the system of equations given}  $\Sigma_E = \mathbb{E}[E_t E_t']$
+\begin{align*}
+\Gamma_0 &= \mathbf{A}\Gamma_1' + \Sigma_E\\
+\Gamma_1 &= \mathbf{A}\Gamma_0\\[2ex]
+\Gamma_s &= \mathbf{A}\Gamma_{s-1} \qquad\text{ for }s\geq1
+\end{align*}
+\end{description}
+\end{frame}
+
+
+
+
+\begin{frame}{Vector autoregressions: unconditional moments }
+\small
+\begin{description}
+\item[Step 4:] {\color{mcxs1}Solve} {\color{mcxs2}the system of equations}:
+\begin{align*}
+\Gamma_0 &= \mathbf{A}\Gamma_1' + \Sigma_E\\
+\Gamma_1 &= \mathbf{A}\Gamma_0
+\end{align*}
+\end{description}
+\begin{align*}
+\Gamma_0 &= \mathbf{A}\Gamma_0\mathbf{A}' + \Sigma_E\\
+\text{vec}(\Gamma_0) &= \text{vec}(\mathbf{A}\Gamma_0\mathbf{A}') + \text{vec}(\Sigma_E)\\
+\text{vec}(\Gamma_0) &= (\mathbf{A}\otimes\mathbf{A})\text{vec}(\Gamma_0) + \text{vec}(\Sigma_E)\\
+(I_{N^2p^2} - \mathbf{A}\otimes\mathbf{A})\text{vec}(\Gamma_0) &= \text{vec}(\Sigma_E)\\
+\text{vec}(\Gamma_0) &= (I_{N^2p^2} - \mathbf{A}\otimes\mathbf{A})^{-1}\text{vec}(\Sigma_E)\\[1ex]
+\Gamma_s &= \mathbf{A}\Gamma_{s-1} \qquad\text{ for }s\geq1.
+\end{align*}
+
+\textbf{Useful matrix transformations.}\\
+$(AB)' = B'A' $\\
+$\text{vec}(ABC) = (C'\otimes A)\text{vec}(B)$\\
+$\text{vec}\underset{\color{mcxs2}(m\times n)}{(X)}$ {\color{mcxs2}-- is an} $mn\times1$ {\color{mcxs2}vector stacking columns of} $X$ {\color{mcxs2}one by one}\\
+$\otimes$ {\color{mcxs2}-- is a Kronecker product}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Vector autoregressions: Vector Moving Average form}
+\small
+
+\textbf{VMA($\infty$) representation of the VAR($p$) process in VAR(1) form.}
+\begin{align*}
+Y_t &= \mathbf{m} + \mathbf{A} Y_{t-1} + E_t\\
+(I_{Np}-\mathbf{A}L)Y_t &= \mathbf{m} + E_t\\
+Y_t &= (I_{Np}-\mathbf{A}L)^{-1}\mathbf{m} + (I_{Np}-\mathbf{A}L)^{-1}E_t\\
+&= \mathbf{M} + E_t + \mathbf{A}E_{t-1}+ \mathbf{A}^2E_{t-2}+\dots
+\end{align*}
+
+\smallskip\textbf{VMA($\infty$) representation of the VAR($p$) process.}\\
+{\color{mcxs2}A} {\color{mcxs1}stationary} VAR($p$) {\color{mcxs2}process has a} VMA($\infty$) {\color{mcxs2}representation:}
+\begin{align*} 
+y_t = JY_t &= J\mathbf{M} + \sum_{i=0}^{\infty}J\mathbf{A}^iE_{t-i} \\
+&= J\mathbf{M} + \sum_{i=0}^{\infty}J\mathbf{A}^iJ'JE_{t-i}\\
+& = \mu + \epsilon_{t} + \Phi_1 \epsilon_{t-1} + \Phi_2 \epsilon_{t-2} + \dots
+\end{align*}
+{\color{mcxs2}where} $\mathbf{A}^2=\mathbf{A}\mathbf{A}${\color{mcxs2}, and } $\Phi_i = J \mathbf{A}^{i}J'${\color{mcxs2}, since} $E_t = J'J E_t$ and $JE_t = \epsilon_t$
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+%\FlushLeft
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Granger} {\color{mcxs2}causality}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+\begin{frame}{Granger causality}
+
+{\color{mcxs2}Partition an $N\times 1$ vector} $y_t$ {\color{mcxs2}into sub-vectors} $y_{1.t}$, $y_{2.t}$ {\color{mcxs2}and} $y_{3.t}${\color{mcxs2}, of dimensions} $N_1$, $N_2, N_3$ {\color{mcxs2}respectively, and} $N_1 + N_2 + N_3 = N$
+$$ y_t = \begin{bmatrix} y_{1t} \\ y_{2t} \\ y_{3t} \end{bmatrix} $$
+
+\small
+\textbf{Notation. }
+\begin{description}
+\item[$Y_t$] {\color{mcxs2}-- information set with observations on} $y_t$ {\color{mcxs2}up to period} $t$
+\item[$Y_{-1.t}$] {\color{mcxs2}-- {\color{mcxs1}constrained information set} with observations on }$y_{2.t}$ {\color{mcxs2}and} $y_{3.t}$ {\color{mcxs2}up to period} $t$
+\item $\mathbb{E}[y_{2.t+1}|\mathcal{I}_t]$ {\color{mcxs2}-- a 1-step ahead predictor of} $y_{2.t}$ {\color{mcxs2} based on set} $\mathcal{I}_t$
+\item[$\mathbf{e}_{2.t+1}$] {\color{mcxs2}-- the corresponding forecast error}
+\item $\mathbb{V}\text{ar}[\mathbf{e}_{2.t+1}|\mathcal{I}_t]$ {\color{mcxs2}-- the corresponding forecast error variance}
+\end{description}
+
+\end{frame}
+
+
+\begin{frame}{Granger causality}
+
+\textbf{Definition.}
+
+\smallskip{\color{mcxs2}Process} $y_{1.t}$ {\color{mcxs2}is said {\color{mcxs1}not to Granger cause}} $y_{2.t}$ {\color{mcxs2}if:}
+$$ \mathbb{V}\text{ar}[\mathbf{e}_{2.t+1}|Y_t] = \mathbb{V}\text{ar}[\mathbf{e}_{2.t+1}|Y_{-1.t}] $$
+
+\bigskip\textbf{Equivalent definition for linear models.}
+$$ \mathbb{E}\left[y_{2.t+1}|Y_t\right] = \mathbb{E}\left[y_{2.t+1}|Y_{-1.t}\right] $$
+
+\bigskip\textbf{References.} \\ \footnotesize
+{\color{mcxs2}Granger (1969, ECTA), Sims (1972, AER)\\ L\"utkepohl (2005, Chapter~2) New Introduction to Multiple Time Series Analysis}
+\end{frame}
+
+
+
+
+
+\begin{frame} {Granger causality and VARs}
+\small
+
+{\color{mcxs2}Consider a} VAR($p$) {\color{mcxs2}process:}
+\begin{align*} 
+(I_n - A_1L - \dots - A_pL^p) y_t &= \mu_0 + u_t \\
+A(L) y_t &= \mu_0 + u_t 
+\end{align*} 
+
+{\color{mcxs1}Rewrite} {\color{mcxs2}the VAR($p$) model respecting the partitioning of $y_t$:}
+$$ \begin{bmatrix} A_{11}(L) & A_{12}(L) & A_{13}(L) \\ A_{21}(L) & A_{22}(L) & A_{23}(L) \\ A_{31}(L) & A_{32}(L) & A_{33}(L)\end{bmatrix}\begin{bmatrix} y_{1.t} \\ y_{2.t} \\ y_{3.t} \end{bmatrix} = \begin{bmatrix} \mu_{0.1} \\ \mu_{0.2} \\ \mu_{0.3} \end{bmatrix} +  \begin{bmatrix} \epsilon_{1.t} \\ \epsilon_{2.t} \\ \epsilon_{3.t} \end{bmatrix}, $$
+{\color{mcxs2}where:}
+\begin{align*}
+\underset{\color{mcxs2}(N_i\times N_i)}{A_{ii}(L)} &= I_{N_i} - A_{ii.1}L - \dots - A_{ii.p}L^p & \text{\color{mcxs2}for } i = 1,2, 3\\
+\underset{\color{mcxs2}(N_i\times N_j)}{A_{ij}(L)} &= - A_{ij.1}L - \dots - A_{ij.p}L^p  & \text{\color{mcxs2}for } i\neq j\\
+\end{align*}
+\end{frame}
+
+
+\begin{frame}{Granger causality in VAR models}
+
+\small
+\textbf{Granger causality.}\\
+{\color{mcxs2}The process} $y_{1t}$ {\color{mcxs2}does} {\color{mcxs1}not Granger cause} $y_{2t}$ {\color{mcxs2} iff:}
+$$ A_{21}(z) = 0 \qquad \forall z\in \mathbb{C} $$
+{\color{mcxs2}which results in the restrictions on the parameters:}
+$$ A_{21.1} = \dots = A_{21.p} = 0 $$
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+%\FlushLeft
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Useful} {\color{mcxs2}distribution}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Matrix-variate normal distribution}
+
+{\color{mcxs2}A} $K\times N$ {\color{mcxs2}matrix} ${\color{purple}A}$ {\color{mcxs2}is said to follow a} {\color{mcxs1}matrix-variate normal} {\color{mcxs2}distribution:}
+$$ {\color{purple}A} \sim \mathcal{MN}_{K\times N}\left( M, Q, P \right), $$ 
+{\color{mcxs2}where} $M$ {\color{mcxs2}is a} $K\times N$  {\color{mcxs2}matrix and} 
+\begin{description}
+\item[$Q$] $N\times N$ {\color{mcxs2}row-specific covariance matrix} 
+\item[$P$] $K\times K$ {\color{mcxs2}column-specific covariance matrix}
+\end{description}
+{\color{mcxs2}if} $\text{vec}({\color{purple}A})$ {\color{mcxs2}is multivariate normal:}
+$$ \text{vec}({\color{purple}A}) \sim \mathcal{N}_{KN}\left( \text{vec}(M), Q\otimes P \right) $$ 
+
+\bigskip
+\textbf{Density function.}  
+\begin{align*}
+\mathcal{MN}_{K\times N}\left( M, Q, P \right) &= {\color{mcxs2}c_{mn}^{-1}}\exp\left\{ -\frac{1}{2}\text{tr}\left[ Q^{-1}({\color{purple}A}-M)'P^{-1}({\color{purple}A}-M) \right] \right\}\\
+{\color{mcxs2}c_{mn}} &= {\color{mcxs2}(2\pi)^{\frac{KN}{2}}\text{det}(Q)^{\frac{K}{2}}\text{det}(P)^{\frac{N}{2}} }
+\end{align*}
+\end{frame}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+%\FlushLeft
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Maximum likelihood} {\color{mcxs2}estimation}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+\begin{frame}{Estimation: matrix notation}
+
+
+\textbf{VAR($p$) model.}
+\begin{align*}
+y_t &= \mu_0 + A_1 y_{t-1} + \dots + A_p y_{t-p} + \epsilon_t\\
+\epsilon_t|Y_{t-1} &\sim iid\mathcal{N}_N\left(\mathbf{0}_N,\Sigma\right)
+\end{align*}
+
+
+\smallskip\textbf{Matrix notation (multivariate linear regression form).}
+\begin{align*} 
+Y &= X{\color{purple}A} + E\\
+E|X &\sim\mathcal{MN}_{T\times N}\left(\mathbf{0},{\color{purple}\Sigma}, I_T\right)
+\end{align*} 
+
+\footnotesize
+$$ 
+\underset{\color{mcxs2}(K\times N)}{{\color{purple}A}}=\begin{bmatrix} \mu_0'\\ A_1'\\ \vdots \\ A_p' \end{bmatrix} \quad
+\underset{\color{mcxs2}(T\times N)}{Y}= \begin{bmatrix}y_1' \\ y_2'\\ \vdots \\ y_T'\end{bmatrix} \quad
+\underset{\color{mcxs2}(K\times1)}{x_t}=\begin{bmatrix} 1\\ y_{t-1}\\ \vdots \\ y_{t-p} \end{bmatrix}\quad
+\underset{\color{mcxs2}(T\times K)}{X}= \begin{bmatrix}x_1' \\ x_2' \\ \vdots \\ x_{T}'\end{bmatrix} \quad
+\underset{\color{mcxs2}(T\times N)}{E}= \begin{bmatrix}\epsilon_1' \\ \epsilon_2' \\ \vdots \\ \epsilon_{T}'\end{bmatrix}
+$$
+
+{\color{mcxs2}where} $K=1+pN$
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Likelihood Function}
+
+\footnotesize
+\begin{align*} 
+L\left( {\color{purple}A},{\color{purple}\Sigma}\right.&\left.|Y,X \right) 
+= {\color{mcxs2}(2\pi)^{-\frac{NT}{2}}}\text{det}({\color{purple}\Sigma})^{-\frac{T}{2}}\exp\left\{ -\frac{1}{2}\sum_{t=1}^{T}\epsilon_t' \Sigma^{-1} \epsilon_t  \right\}\\
+&= {\color{mcxs2}(2\pi)^{-\frac{NT}{2}}}\text{det}({\color{purple}\Sigma})^{-\frac{T}{2}}\exp\left\{ -\frac{1}{2}\sum_{t=1}^{T}\left( y_t - {\color{purple}A}'x_t \right)' {\color{purple}\Sigma}^{-1} \left( y_t - {\color{purple}A}'x_t \right)  \right\}\\
+&= {\color{mcxs2}(2\pi)^{-\frac{NT}{2}}}\text{det}({\color{purple}\Sigma})^{-\frac{T}{2}}\exp\left\{ -\frac{1}{2} \text{vec}\left( (Y-X{\color{purple}A})' \right)' \left(I_T\otimes {\color{purple}\Sigma}^{-1} \right) \text{vec}\left( (Y-X{\color{purple}A})' \right)  \right\}\\
+&= {\color{mcxs2}(2\pi)^{-\frac{NT}{2}}}\text{det}({\color{purple}\Sigma})^{-\frac{T}{2}}\exp\left\{ -\frac{1}{2}\text{tr}\left[ {\color{purple}\Sigma}^{-1}(Y-X{\color{purple}A})'I_T(Y-X{\color{purple}A}) \right] \right\}\\
+&= {\color{mcxs2}(2\pi)^{-\frac{NT}{2}}}\text{det}({\color{purple}\Sigma})^{-\frac{T}{2}}\exp\left\{ -\frac{1}{2}\text{tr}\left[ {\color{purple}\Sigma}^{-1}(Y-X{\color{purple}A})'(Y-X{\color{purple}A}) \right] \right\}
+\end{align*}
+
+\bigskip\textbf{The trace.}\\[1ex]
+$\text{tr}(X) = \sum_{n=1}^{N}X_{nn}$ {\color{mcxs2}for a square} $N\times N$ {\color{mcxs2}matrix} $X$\\[1ex]
+$ \text{tr}\left[ ABCD \right] = \text{vec}\left( D' \right)' \left( C' \otimes A \right) \text{vec}\left( B \right)$
+ 
+\end{frame}
+
+
+\begin{frame}{Maximum likelihood estimation}
+
+\begin{align*} 
+\hat{A},\hat\Sigma &= \text{argmax } l\left( {\color{purple}A},{\color{purple}\Sigma}|Y,X \right)\\[2ex]
+l\left( A,\Sigma|Y,X \right) &\propto \frac{T}{2}\log\text{det}\left({\color{purple}\Sigma}^{-1}\right)  -\frac{1}{2}\text{tr}\left[ {\color{purple}\Sigma}^{-1}(Y-X{\color{purple}A})'(Y-X{\color{purple}A}) \right] \\
+=& \frac{T}{2}\log\text{det}\left({\color{purple}\Sigma}^{-1}\right)  -\frac{1}{2}\text{tr}\left[ {\color{purple}\Sigma}^{-1}\left(Y'Y-2{\color{purple}A'}X'Y + {\color{purple}A}'X'X{\color{purple}A}\right) \right] 
+\end{align*}
+
+{\color{mcxs2}To derive the} {\color{mcxs1}MLE} {\color{mcxs2}use calculus}
+
+\bigskip\textbf{Useful formulae.}\footnotesize
+\begin{align*}
+\text{det}\left(X^{-1}\right) &= \text{det}\left(X\right)^{-1} & \frac{\partial\text{det}(X)}{\partial X} &= \text{det}(X)(X')^{-1}\\[1ex]
+\frac{\partial\text{tr}(X)}{\partial X} &= I_N&
+\frac{\partial\text{tr}(AXB)}{\partial X} &= A'B'\\[1ex]
+\frac{\partial\text{tr}(AX'B)}{\partial X} &= BA&
+\frac{\partial\text{tr}(AX'BX)}{\partial X} &= (B+B')XA
+\end{align*}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Maximum likelihood estimation}
+
+\begin{align*} 
+\frac{\partial l\left( {\color{purple}A},{\color{purple}\Sigma}|Y,X \right)}{\partial {\color{purple}A}} &= -\frac{1}{2}\left[ -2X'Y{\color{purple}\Sigma}^{-1}  + 2X'X{\color{purple}A}{\color{purple}\Sigma}^{-1} \right]\\
+&= X'Y{\color{purple}\Sigma}^{-1}- X'X{\color{purple}A}{\color{purple}\Sigma}^{-1} \\[2ex]
+\frac{\partial l\left( {\color{purple}A},{\color{purple}\Sigma}|Y,X \right)}{\partial {\color{purple}\hat{A}}} &= \mathbf{0}_{K\times N}\\
+X'Y{\color{purple}\hat\Sigma}^{-1}- X'X{\color{purple}\hat{A}}{\color{purple}\hat\Sigma}^{-1} &= \mathbf{0}_{K\times N}\\
+ X'X{\color{purple}\hat{A}}{\color{purple}\hat\Sigma}^{-1} &= X'Y{\color{purple}\hat\Sigma}^{-1} \quad{\color{mcxs2}\Big/\times\hat\Sigma}\\
+{\color{mcxs2}(X'X)^{-1} \times\Big/}\quad X'X{\color{purple}\hat{A}} &= X'Y\\[2ex]
+{\color{purple}\hat{A}} &= (X'X)^{-1}X'Y 
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Maximum likelihood estimation}
+\small
+\begin{align*} 
+\frac{\partial l\left( {\color{purple}A},{\color{purple}\Sigma}|Y,X \right)}{\partial {\color{purple}\Sigma}^{-1}} &= \frac{T}{2}\frac{1}{\text{det}\left({\color{purple}\Sigma}^{-1}\right)}\text{det}\left({\color{purple}\Sigma}^{-1}\right)\left({\color{purple}\Sigma}^{-1}\right)^{-1} - \frac{1}{2}(Y-X{\color{purple}A})'(Y-X{\color{purple}A})\\
+&= \frac{T}{2}{\color{purple}\Sigma} - \frac{1}{2}(Y-X{\color{purple}A})'(Y-X{\color{purple}A}) \\[2ex]
+\frac{\partial l\left( {\color{purple}A},{\color{purple}\Sigma}|Y,X \right)}{\partial {\color{purple}\hat\Sigma}^{-1}} &= \mathbf{0}_{N\times N}\\
+\mathbf{0}_{N\times N} &= \frac{T}{2}{\color{purple}\hat\Sigma} - \frac{1}{2}(Y-X{\color{purple}\hat{A}})'(Y-X{\color{purple}\hat{A}})\\
+\frac{T}{2}{\color{purple}\hat\Sigma} &= \frac{1}{2}(Y-X{\color{purple}\hat{A}})'(Y-X{\color{purple}\hat{A}})\\[2ex]
+{\color{purple}\hat\Sigma} &= \frac{1}{T}(Y-X{\color{purple}\hat{A}})'(Y-X{\color{purple}\hat{A}})
+\end{align*}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Maximum likelihood estimator: asymptotic properties}
+
+\textbf{Assumption.}\\
+{\color{mcxs2}A white noise process} $\epsilon_t = (\epsilon_{1.t},\dots , \epsilon_{N.t})$ {\color{mcxs2}is called a} {\color{mcxs1}standard white noise} {\color{mcxs2}if} $\epsilon_t$ {\color{mcxs2}are continuous random vectors satisfying} $\mathbb{E}[\epsilon_t] = 0$, $\Sigma = \mathbb{E}[\epsilon_t \epsilon_t']$ {\color{mcxs2}is nonsingular,} $\epsilon_t$ {\color{mcxs2}and} $\epsilon_{t-s}$ {\color{mcxs2}are independent for} $s \neq 0$, {\color{mcxs2}and, for some positive finite constant} $c$:
+$$ \mathbb{E}[|\epsilon_{i.t} \epsilon_{j.t} \epsilon_{k.t} \epsilon_{m.t}|] \leq c \qquad{\color{mcxs2}\text{for }i,j,k,m = 1,\dots,N, \text{ and all }t} $$
+
+\small
+\bigskip{\color{mcxs2}The assumption states that all fourth moments exist and are bounded.}
+\end{frame}
+
+
+
+\begin{frame}{Maximum likelihood estimator: asymptotic properties}
+
+\textbf{Asymptotic properties of the MLE.}\\
+{\color{mcxs2}Based on L\"utkepohl (2005, p.74)}
+
+\bigskip{\color{mcxs2}Let} $y_t$ {\color{mcxs2}be a} {\color{mcxs1}stationary} $N${\color{mcxs2}-dimensional} VAR($p$) {\color{mcxs2}process with standard white noise residuals. Then the MLE is}
+
+\begin{description}
+\smallskip\item[consistent:]
+$$ \text{plim } {\color{purple}\hat{A}} = {\color{purple}A} $$
+
+\bigskip\item[asymptotically normally distributed:]
+$$ \sqrt{T}\left({\color{purple}\hat{A}} - {\color{purple}A}\right) \xrightarrow{d} \mathcal{MN}_{K\times N}\left(\mathbf{0}_{K\times N}, {\color{purple}\Sigma}, T(X'X)^{-1} \right) $$
+\end{description}
+
+\end{frame}
+
+
+
+\begin{frame}{Maximum likelihood estimator: asymptotic properties}
+
+\textbf{Asymptotic properties of the MLE.}\\
+{\color{mcxs2}Based on Harris, Hurn, Martin (2012, Chapter 16)}
+
+\bigskip{\color{mcxs2}Let} $y_t$ {\color{mcxs2}be a} {\color{mcxs1}unit-root nonstationary} $N${\color{mcxs2}-dimensional} VAR($p$) {\color{mcxs2}process with standard white noise residuals} $ y_t = y_{t-1} + \epsilon_t$\\
+{\color{mcxs2}Then the MLE is}
+
+\begin{description}
+\smallskip\item[consistent:]
+$$ \text{plim } {\color{purple}\hat{A}} = {\color{purple}A} $$
+
+\bigskip\item[asymptotically non-normally distributed:]
+$$ {\color{mcxs1}T}\left({\color{purple}\hat{A}} - {\color{purple}A}\right) \xrightarrow{d} \left[ \int_0^1 B_K(s)B_K(s)'ds \right]^{-1} \int_0^1 B(s)_KB_N(s)'ds $$
+\end{description}
+
+$B_N(s)$ {\color{mcxs2}-- denotes an $N$-dimensional Brownian motion}
+\end{frame}
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}{Vector autoregressions}
+
+\textbf{Four representations.}
+
+\smallskip\begin{description}
+\item[lag polynomial] {\color{mcxs2}-- stationarity conditions}
+\item[VAR(1)] {\color{mcxs2}-- unconditional moments}
+\item[VMA($\infty$)] {\color{mcxs2}-- effects of the shocks}
+\item[multivariate regression] {\color{mcxs2}-- estimation}
+\end{description}
+\end{frame}
+}
+
+
+
+\end{document} 
