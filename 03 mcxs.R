@@ -51,6 +51,59 @@ text(1.01,30,"likelihood", cex=1.5, col=mcxs4)
 text(0.94,40,"posterior", cex=1.5, col=mcxs2)
 dev.off()
 
+
+
+
+
+
+
+# better learning
+########################
+# OLS
+ols      = ar(y, aic=FALSE, order.max=1)
+ols.mu   = ols$ar
+ols.var  = var(ols$resid[2:192])
+
+# prior
+pri      = ar(y, aic=FALSE, order.max=14)
+pri.sig  = var(pri$resid[15:192])
+
+pri.mu   = 1
+pri.var  = 0.01
+
+# posterior
+pos.var  = 1/(1/pri.var + 1/ols.var)
+pos.mu   = ((1/pri.var)*pri.mu + (1/ols.var)*ols.mu)*pos.var
+
+(1/pri.var)*pos.var
+(1/ols.var)*pos.var
+
+from     = 0.8
+to       = 1.2
+grid     = seq(from=from, to=to, length.out=300)
+prior    = dnorm(grid, mean = pri.mu, sd=sqrt(pri.var))
+likel    = dnorm(grid, mean = ols.mu, sd=sqrt(ols.var))
+poste    = dnorm(grid, mean = pos.mu, sd=sqrt(pos.var))
+
+limits   = range(c(prior,likel,poste))
+
+pdf(file="grphs/learning_better.pdf", width=9,height=6)
+plot(grid, likel, type="l", xlim=c(from,to), ylim=limits, axes=FALSE, xlab="", ylab="", main="", lwd=3,col=mcxs4)
+axis(1,c(0.85,pri.mu,pos.mu,ols.mu,1.15),c("","","","",""), col=mcxs2)
+axis(2,c(0,20,40),c("","",""), col=mcxs2)
+mtext("parameter", side = 1, line = 2, cex=1.5, col=mcxs2)
+mtext("density", side = 2, line = 1, cex=1.5, col=mcxs2)
+lines(grid, prior, lwd=3,col=mcxs3)
+lines(grid, poste, lwd=3,col=mcxs2)
+text(pri.mu,10,"prior", cex=1.5, col=mcxs3)
+text(1.03,30,"likelihood", cex=1.5, col=mcxs4)
+text(0.94,35,"posterior", cex=1.5, col=mcxs2)
+dev.off()
+
+
+
+
+
 ##############################
 from     = -1
 to       = 1
