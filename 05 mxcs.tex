@@ -672,6 +672,39 @@ y_{T+h|T} = \mathbb{E}[y_{T+h}|\mathbf{y}_T] &= \mathbb{E}[\epsilon_{T+h} + \eps
 
 
 
+\begin{frame}
+
+\begin{center}
+\textbf{Trend-stationary series vs. random walk with drift}
+\end{center}
+\begin{align*}
+y_t &= \beta_0 +\beta_1 t + u_t & y_t &= y_{0} +\mu_0 t + u_t +\dots+ u_{1}\\
+u_t &\sim iid\left(0,\sigma_u^2\right) & u_t &\sim iid\left(0,\sigma_u^2\right)\\[2ex]
+E[y_t] &= \beta_0 +\beta_1 t & E[y_t] &= y_{0} +\mu_0 t\\
+Var[y_t] &= \sigma_u^2 & Var[y_t] &= t\sigma_u^2\\
+\rho_l &= 0 & \rho_l&= \sqrt{\frac{t-l}{t}}
+\end{align*}
+
+Trend-stationary series {\color{mcxs3}is characterised by random deviations from a time trend. It is unit-root stationary}
+
+\bigskip Random walk with drift {\color{mcxs3}accumulates shocks over time around a~time trend. It is unit-root non-stationary}
+\end{frame}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs5}
+\begin{frame}{Trend-stationary series vs. random walk with drift}
+
+\begin{center}
+\includegraphics[scale=0.5, trim=0cm 0.6cm 0cm 0.5cm]{grphs/sim-tss-acfs.pdf}
+
+{\color{mcxs2}Both series are generated using the same simulated shocks.}
+\end{center}
+\end{frame}
+}
+
+
 
 
 
