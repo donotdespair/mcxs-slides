@@ -249,7 +249,7 @@ $$ \theta_{(k)} = \theta_{(k-1)} - H^{-1}\left(\theta_{(k-1)}\right)G\left(\thet
 \theta_{(k)} &= \theta_{(k-1)} {\color{mcxs3}+ J^{-1}\left(\theta_{(k-1)}\right)}G\left(\theta_{(k-1)}\right)
 \end{align*} 
 
-\bigskip{\color{mcxs2}Hessian matrix ordinate} $- H^{-1}\left(\theta_{(k-1)}\right)$ {\color{mcxs2}is aproximated by the outer product of gradients} {\color{mcxs3}$J^{-1}\left(\theta_{(k-1)}\right)$}.
+\bigskip{\color{mcxs2}Hessian matrix ordinate} $- H^{-1}\left(\theta_{(k-1)}\right)$ {\color{mcxs2}is approximated by the outer product of gradients} {\color{mcxs3}$J^{-1}\left(\theta_{(k-1)}\right)$}.
 
 \small
 \begin{align*} 
@@ -420,7 +420,7 @@ $$ p(\theta|Y)\propto L(\theta|Y)p(\theta) $$
 \end{description}
 \item[Repeat] {\color{mcxs2}steps} 1. {\color{mcxs2}and} 2. $S_1 + S_2$ {\color{mcxs2}times}
 \item[Discard] {\color{mcxs2}the first} $S_1$ {\color{mcxs2}draws that allowed the algorithm to} {\color{mcxs3}converge to the stationary posterior distribution}
-\item[Output] {\color{mcxs2}is a sample of draws from the joint posterior distribution} $\left\{ \theta_1^{(s)}, \theta_2^{(s)} \right\}_{s=S_1+1}^{S_2}$
+\item[Output] {\color{mcxs2}is a sample of draws from the joint posterior distribution} $\left\{ \theta_1^{(s)}, \theta_2^{(s)} \right\}_{s=S_1+1}^{S_1 + S_2}$
 \end{description}
 
 \end{frame}
@@ -624,7 +624,7 @@ p\left({\color{mcxs3}\sigma^2}|Y,X,\beta\right) &= \mathcal{IG}2\left( \overline
 \end{description}
 \item[Repeat] {\color{mcxs2}steps} 1. {\color{mcxs2}and} 2. $S_1 + S_2$ {\color{mcxs2}times}
 \item[Discard] {\color{mcxs2}the first} $S_1$ {\color{mcxs2}draws that allowed the algorithm to} {\color{mcxs3}converge to the stationary posterior distribution}
-\item[Output] {\color{mcxs2}is a sample of draws from the joint posterior distribution} $\left\{ \beta^{(s)}, \sigma^{2(s)} \right\}_{s=S_1+1}^{S_2}$
+\item[Output] {\color{mcxs2}is a sample of draws from the joint posterior distribution} $\left\{ \beta^{(s)}, \sigma^{2(s)} \right\}_{s=S_1+1}^{S_1 + S_2}$
 \end{description}
 
 \end{frame}
