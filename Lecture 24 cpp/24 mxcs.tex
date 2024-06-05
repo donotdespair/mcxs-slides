@@ -1,0 +1,477 @@
+\documentclass[notes,blackandwhite,mathsans]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{array}
+\usepackage{wrapfig}
+\usepackage{changepage}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{listings}
+
+%\usetheme{Singapore} 	% Huge space, no names no nothing, no bars
+
+% The default font theme installs a sans serif for all text of the presentation
+%\usefonttheme{default}
+%\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\lstset{basicstyle=\ttfamily\scriptsize,
+         keywordstyle=\color{white}\ttfamily,
+         commentstyle=\color{gray}\ttfamily,
+         morecomment=[l][\color{gray}]{\#},
+	emphstyle=\color{purple},
+	emph={vec,mat}
+}
+
+
+
+
+\begin{document}
+\fontfamily{pag}\selectfont
+\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+{\Large\color{black}Sharing early experiences of}\\ [0.5ex]
+{\Large\color{black}programming with Rcpp}\\ [27ex]
+
+Tomasz Wo\'zniak {\color{lightgray}University of Melbourne}\\[1ex]
+
+{Macroeconometrics} {\color{lightgray}}\\
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=lightgray}
+\begin{frame}{Rcpp package}
+
+\bigskip \textbf{Rcpp} package facilitates the application of cpp for computations in R.
+
+\bigskip {\color{darkgray}It provides interface for communication between R and cpp simplifying it.}
+
+\bigskip {\color{darkgray}It is much easier to benefit from the best of the two worlds:}
+\begin{description}
+\smallskip\item[cpp] {\color{darkgray}code is compiled facilitating quick computations:}\\ {\color{purple}perfect for writing functions}
+
+\smallskip\item[R] {\color{darkgray}code is interpreted and dynamic:}\\ {\color{purple}perfect for data analysis using functions written in cpp}
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Rcpp package}
+
+In this presentation we are focusing on applications to Bayesian estimation that relies on:\small
+
+\bigskip\textbf{elements of programming:} {\color{darkgray}functions, loops, etc.}
+
+\smallskip\textbf{compatible object types:} {\color{darkgray}scalars, vectors, matrices, lists, etc.}
+
+\smallskip\textbf{linear algebra:} {\color{darkgray}using library} Armadillo
+
+\smallskip\textbf{random number generators:} {\color{darkgray}fast and reproducible using} Rcpp
+
+\vspace{1cm}
+\textbf{Rcpp} {\color{darkgray}is an R package providing the interface, object type compatibility, ..., and} {\color{purple}vectorised random number generators }
+
+\smallskip\textbf{Armadillo} {\color{darkgray}is a cpp library for linear algebra with fantastic \href{http://arma.sourceforge.net/docs.html}{documentation online}} {\color{purple}}
+
+\smallskip\textbf{RcppArmadillo} {\color{darkgray}is an R package providing simplified interface with} Armadillo {\color{darkgray}and providing compatibility with its object types}
+
+\end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}{Rcpp package: learning resources}\small
+
+\bigskip\textbf{book:} {\color{darkgray}Eddelbuettel (2013) Seamless R and C++ Integration with Rcpp}
+
+\bigskip\textbf{bookdown:} {\color{darkgray}Tsuda (2020) \href{https://teuder.github.io/rcpp4everyone_en/}{Rcpp for everyone}}
+
+\bigskip\textbf{vignettes:} {\color{darkgray}for packages} Rcpp {\color{darkgray}and} RcppArmadillo\\ {\color{darkgray}(published in JSS, CSDA, and TAS)}
+
+\bigskip\textbf{datacamp course:} \href{https://learn.datacamp.com/courses/optimizing-r-code-with-rcpp}{\color{darkgray}Optimizing R Code with Rcpp} by Romain Fran\c{c}ois
+
+\bigskip\textbf{online resources:} {\color{darkgray}\href{https://gallery.rcpp.org/}{RcppGallery}, \href{http://arma.sourceforge.net/docs.html}{Armadillo library documentation}, \href{http://stackoverflow.com}{stackoverflow.com}}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\FlushLeft
+\vspace{8.0cm}\LARGE
+{{\color{black}A simple} {\color{lightgray}example}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Developing a function in a \texttt{.cpp} file}
+
+\texttt{nicetry.cpp}\\
+\lstinputlisting[language=C++, frame=trBL ]{nicetry_f.cpp} 
+
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Using a function from a \texttt{.cpp} file}
+
+\texttt{nicetry.cpp}\\
+\lstinputlisting[language=C++, frame=trBL]{nicetry.cpp} % get rid of the 
+
+
+\texttt{linreg.R}\\
+\begin{lstlisting}[frame=trBL ]
+library(Rcpp)
+sourceCpp("nicetry.cpp")
+
+x          = cbind(rep(1,5),1:5)
+y          = x %*% c(1,2) + rnorm(5)
+beta.hat   = nicetry(y, x)
+\end{lstlisting}
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\FlushLeft
+\vspace{8.0cm}\LARGE
+{{\color{black}Simulation} {\color{lightgray}Smoother}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Simulation smoother}
+
+{\color{darkgray}Sample random draws from the multivariate normal distribution:}
+$$ \mathcal{N}_T\left(\Omega^{-1}\alpha, \Omega^{-1}\right) $$
+
+\begin{description}
+\item[$\Omega$] - $T\times T$ {\color{darkgray}precision matrix that is band- or tri-diagonal}
+\item[$\alpha$] - $T\times1$ {\color{darkgray}location vector}
+\end{description}
+
+\bigskip
+{\color{darkgray}A random draw is computed by}
+$$
+L^{-1\prime}\left(L^{-1}\alpha + \epsilon\right)
+$$
+\begin{description}
+\item[$L=\text{chol}(\Omega)$] {\color{darkgray}- is lower-triangular}
+\item[$\epsilon$] - $T${\color{darkgray}-vector with independent standard normal draws}
+\end{description}
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{R: simulation smoother \#1}
+\texttt{rmvnorm\_solve.R}\\
+\lstinputlisting[ frame=trBL]{rmvnorm_solve.R}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{R: simulation smoother \#2}
+\texttt{rmvnorm\_bandchol.R}\\
+\lstinputlisting[frame=trBL]{rmvnorm_bandchol.R}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{R: simulation smoother \#3}
+\texttt{rmvnorm\_trichol.R}\\
+\lstinputlisting[frame=trBL]{rmvnorm_trichol.R}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Rcpp: simulation smoother \#1}
+\texttt{rmvnorm\_arma\_inv.cpp}\\
+\lstinputlisting[language=C++, linerange={1-24}, frame=trBL, linewidth=320pt]{rmvnorm_arma_inv.cpp}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Rcpp: simulation smoother \#2}
+\texttt{rmvnorm\_arma\_solve.cpp}\\
+\lstinputlisting[language=C++, linerange={1-25}, frame=trBL]{rmvnorm_arma_solve.cpp}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Rcpp: simulation smoother \#3}
+\begin{adjustwidth}{-0.6cm}{0cm}
+\texttt{rmvnorm\_arma\_stochvol.cpp}\\ 
+\lstinputlisting[language=C++, linerange={56-78}]{rmvnorm_arma_stochvol.cpp}
+\end{adjustwidth}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Simulation smoother}
+\texttt{SimulationSmoother.R}\\ 
+\lstinputlisting[ linerange={3-21}, frame=trBL, linewidth=320pt]{SimulationSmoother.R}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Simulation smoother}
+\texttt{SimulationSmoother.R}\\ 
+\lstinputlisting[linerange={23-32}, frame=trBL]{SimulationSmoother.R}
+
+\bigskip
+\begin{adjustwidth}{-0.4cm}{0cm}
+\scriptsize
+\begin{verbatim}
+Unit: milliseconds
+      expr       min        lq      mean    median        uq        max neval
+   R.solve 15.012696 16.022046 19.049814 16.741754 21.296232  41.665376   100
+    R.band  5.521327  6.298791 13.280026  6.719498  9.619501 117.470313   100
+ R.tridiag  3.674740  4.004751  8.079238  4.449233  4.916731 178.783048   100
+   cpp.inv 10.622570 11.113882 12.171498 11.594380 12.052189  21.046931   100
+   cpp.sol  2.024739  2.183631  2.789788  2.808968  2.971318   6.256791   100
+   cpp.sto  1.556249  1.621727  1.875903  1.882130  1.988038   3.034821   100
+\end{verbatim}
+\end{adjustwidth}
+\end{frame}
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\FlushLeft
+\vspace{8.0cm}\LARGE
+{{\color{black}Gibbs sampler} {\color{lightgray}for a local-level model}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=lightgray}
+\begin{frame}{Gibbs sampler for a local-level model}
+
+The model for a unit-root non-stationary variable:
+\begin{align*}
+y_t &= \mu_t + \epsilon_t & \epsilon_t &\sim\mathcal{N}\left(0,\sigma^2\right)\\
+\mu_t &= \mu_{t-1} + m_t & m_t &\sim\mathcal{N}\left(0,\sigma_m^2\right)
+\end{align*}
+
+Gibbs sampler:\footnotesize
+\begin{align*}
+\mu|y, \mu_0, \sigma^2, \sigma_n^2 &\sim\mathcal{N}_T\left( \overline{V}^{-1}\overline{\mu}, \overline{V}^{-1} \right)\\[1ex]
+\overline{V}^{-1} &= \sigma^{-2}I_T + \sigma_m^{-2}H'H\\
+\overline{\mu} &= \sigma^{-2}y + \sigma_m^{-2}\mu_0 e_{1}\\[1ex]
+\mu_0|y, \mu_1, \sigma_m,^2 &\sim\mathcal{N}\left( \left( \sigma_m^{-2} + \underline{v}^{-1} \right)^{-1}, \left( \sigma_m^{-2} + \underline{v}^{-1} \right)^{-1}\sigma_m^{-2}\mu_1 \right)\\
+\sigma^2|y,\mu
+ &\sim\mathcal{IG}2\left(\underline{s} + (y-\mu)'(y-\mu), \underline{\nu} + T  \right)\\
+\sigma_m^2|\mu, \mu_0 &\sim\mathcal{IG}2\left(\underline{s} + (H\mu-\mu_0e_{1})'(H\mu-\mu_0e_{1}), \underline{\nu} + T  \right)
+\end{align*}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Gibbs sampler for a local-level model}
+\texttt{LL\_arma\_solve.cpp - part 1}\\ 
+\lstinputlisting[language=C++, linerange={1-21}, frame=trBL, linewidth=320pt]{LL_arma_solve.cpp}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Gibbs sampler for a local-level model}
+\texttt{LL\_arma\_solve.cpp - part 2}\\ 
+\lstinputlisting[language=C++, linerange={22-38}, frame=trBL, linewidth=320pt]{LL_arma_solve.cpp}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Gibbs sampler for a local-level model}
+\texttt{LL\_arma\_solve.cpp - part 3}\\ 
+\begin{adjustwidth}{-0.4cm}{0cm}
+\lstinputlisting[language=C++, linerange={40-62}, frame=trBL, linewidth=335pt]{LL_arma_solve.cpp}
+\end{adjustwidth}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+%\frametitle{Gibbs sampler for a local-level model}
+\texttt{LL\_arma\_solve.cpp - part 4}\\ 
+\begin{adjustwidth}{-0.4cm}{0cm}
+\lstinputlisting[language=C++, linerange={64-81}, frame=trBL, linewidth=335pt]{LL_arma_solve.cpp}
+\end{adjustwidth}
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]
+\frametitle{Gibbs sampler for a local-level model}
+\texttt{LL.R}\\ 
+\lstinputlisting[linerange={27-34}, frame=trBL]{LL.R}
+
+\bigskip
+\begin{adjustwidth}{-0.4cm}{0cm}
+\scriptsize
+\begin{verbatim}
+Unit: milliseconds
+    expr        min         lq       mean     median         uq       max neval
+   R.not 127.266986 132.328077 155.005314 138.435266 154.022634 327.33741   100
+   R.ban  46.167909  49.679159  95.663136  55.453045 159.034735 324.58272   100
+   R.tri  19.089019  22.110003  41.142920  26.470268  29.056582 150.71913   100
+ cpp.inv  10.580124  11.180750  12.486657  11.937587  12.845465  26.01354   100
+ cpp.sol  10.542156  11.145461  12.291518  11.682092  12.380952  27.42871   100
+ cpp.sto   8.177979   8.542281   9.554215   9.115295   9.739227  19.19876   100
+\end{verbatim}
+\end{adjustwidth}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}{What's next?}
+
+\vspace{0.5cm}
+\begin{center}
+\LARGE{\color{black}Rewrite all your code in Rcpp!}
+\end{center}
+\end{frame}
+}
+
+
+
+
+\end{document} 

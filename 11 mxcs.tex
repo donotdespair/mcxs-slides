@@ -1,0 +1,728 @@
+\documentclass[notes,blackandwhite,mathsans,usenames,dvipsnames]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{animate}
+\usepackage{changepage}
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\usefonttheme{default}
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=0.97\paperwidth,ht=2.25ex,dp=2ex,right]{}
+{\color{mcxs2} \insertframenumber{} / \inserttotalframenumber}
+  \end{beamercolorbox}}%
+}
+
+
+
+
+\definecolor{mcxs1}{HTML}{05386B}
+\definecolor{mcxs2}{HTML}{379683}
+\definecolor{mcxs3}{HTML}{5CDB95}
+\definecolor{mcxs4}{HTML}{8EE4AF}
+\definecolor{mcxs5}{HTML}{EDF5E1}
+\setbeamercolor{frametitle}{fg=mcxs2}
+\AtBeginDocument{\color{mcxs1}}
+
+\setbeamercolor{itemize item}{fg=mcxs1}
+\setbeamercolor{itemize subitem}{fg=mcxs2}
+\setbeamercolor{enumerate item}{fg=mcxs1}
+\setbeamercolor{description item}{fg=mcxs1}
+
+\setbeamertemplate{itemize item}[triangle]
+\setbeamertemplate{itemize subitem}[circle]
+
+
+\begin{document}
+%\fontfamily{pag}\selectfont
+%\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\vspace{1cm}
+\begin{tabular}{rl}
+&\textbf{\LARGE\color{mcxs3} Macroeconometrics}\\[8ex]
+\textbf{\Large Lecture 11}&\textbf{\Large\color{mcxs5}Structural Vector Autoregressions}\\[19ex]
+&\textbf{Tomasz Wo\'zniak}\\[1ex]
+&{\small\color{mcxs5} Department of Economics}\\
+&{\small\color{mcxs5}University of Melbourne}
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\bigskip 
+\textbf{\color{purple}Structural VARs}
+
+\bigskip\textbf{\color{mcxs1}Identification problem}
+
+\bigskip\textbf{\color{mcxs1}Identification of the} \textbf{\color{purple}monetary policy shock}\\ \hspace{0.5cm}\textbf{\color{mcxs1}using exclusion restrictions}
+
+\bigskip\textbf{\color{mcxs1}Identification using exclusion restrictions}
+
+\bigskip\textbf{\color{mcxs1}Other ways of identifying structural shocks}
+
+\bigskip 
+\small
+Compulsory readings: \scriptsize
+
+\smallskip{\color{mcxs5}Kilian \& L\"utkepohl (2017) Chapter 8: Identification by Short-Run Restrictions, Structural Vector Autoregressive Analysis}
+
+\small
+\bigskip Useful readings: \scriptsize
+
+\smallskip{\color{mcxs5}Rubio-Ram\'irez, Waggoner \& Zha (2010) Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference, Review of Economic Studies}
+
+\end{frame}
+}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\centering
+\bigskip
+\begin{tabular}{ c l}
+\toprule 
+\multicolumn{2}{c}{\textbf{Modeling Effects of Monetary Policy}}\\
+11  & Structural Vector Autoregressions \\
+12  & Structural VAR tools \\
+13  & Structural VARs: Bayesian estimation I \\
+14  & Structural VARs: Bayesian estimation II \\
+15  & Modeling effects of monetary policy \\[1ex]
+\bottomrule
+\end{tabular}
+
+
+\end{frame}
+}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\bigskip\textbf{\color{mcxs1}Objectives.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs1}To introduce SVARs -- a basic tool of empirical analyses}
+\item {\color{mcxs1}To analyse the identification of the monetary policy shock}
+\item {\color{mcxs1}To present the identification problem of SVARs}
+\end{itemize}
+
+\bigskip\textbf{\color{mcxs5}Learning outcomes.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs5}Understanding various forms of SVAR models}
+\item {\color{mcxs5}Checking the identification of SVARs with exclusion restrictions}
+\item {\color{mcxs5}Working with rotation and orthogonal matrices}
+\end{itemize}
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Structural} {\color{mcxs4}VARs}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+\begin{frame}{Structural VARs}
+
+\begin{align*}
+B_0y_t &= b_0 + B_1y_{t-1}+ \dots + B_py_{t-p} + u_t\\
+u_t|Y_{t-1} &\sim iid(\mathbf{0}_N,I_N)
+\end{align*}
+
+\bigskip\begin{description}
+\item[$B_0$] {\color{mcxs2}--} $N\times N$ {\color{mcxs2}matrix of} {\color{purple}contemporaneous relationships} {\color{mcxs2}also called} {\color{purple}structural matrix}\\
+
+\smallskip {\color{mcxs2}It captures contemporaneous relationships between variables}
+
+\item[$u_t$] {\color{mcxs2}--} $N\times1$ {\color{mcxs2}vector of conditionally on} $Y_{t-1}$ {\color{mcxs2}orthogonal or independent} {\color{purple}structural shocks}
+
+\smallskip {\color{mcxs2}Isolating these shocks allows us to identify dynamic effects of uncorrelated shocks on variables} $y_t$
+\end{description}
+
+\bigskip\textbf{Structural Form (SF) model}\\
+{\color{mcxs2}The SVAR above is called a} {\color{purple}structural form} {\color{mcxs2}model} 
+
+\end{frame}
+
+
+
+
+\begin{frame}{Structural VARs}
+
+{\color{mcxs2}Premultiply the SVAR equation by} $B_0^{-1}$
+$$ y_t = B_0^{-1}b_0 + B_0^{-1}B_1y_{t-1}+ \dots + B_0^{-1}B_py_{t-p} + B_0^{-1}u_t $$
+
+{\color{mcxs2}to obtain a model in a form that uses the autoregressive parameters of the VAR}
+$$ y_t = \mu_0 + A_1y_{t-1}+ \dots + A_py_{t-p} + B_0^{-1}u_t$$
+
+{\color{mcxs2}and a different formulation of the} {\color{purple}SF} {\color{mcxs2}model}
+$$ y_t = \mu_0 + A_1y_{t-1}+ \dots + A_py_{t-p} + Bu_t$$
+
+\end{frame}
+
+
+
+
+\begin{frame}{Structural VARs}
+
+\begin{align*}
+y_t &= \mu_0 + A_1y_{t-1}+ \dots + A_py_{t-p} + Bu_t\\
+u_t|Y_{t-1} &\sim iid(\mathbf{0}_N,I_N)
+\end{align*}
+
+
+\bigskip\begin{description}
+\item[$B=B_0^{-1}$] {\color{mcxs2}-- contemporaneous effects matrix} \\
+
+\smallskip {\color{mcxs2}It captures contemporaneous effects of shocks on variables} $y_t$
+
+\item[$A_i=B_0^{-1}B_i$] {\color{mcxs2}-- autoregressive slope coefficients for }$i=1,\dots,p$
+\item[$\mu_0=B_0^{-1}b_0$] {\color{mcxs2}-- a constant term}
+\end{description}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Structural VARs}
+
+\textbf{Reduced Form (RF) representation}
+\begin{align*}
+y_t &= \mu_0 + A_1y_{t-1}+ \dots + A_py_{t-p} + \epsilon_t\\
+\epsilon_t|Y_{t-1} &\sim iid(\mathbf{0}_N,\Sigma)
+\end{align*}
+
+\smallskip\small{\color{mcxs2}Either of the} {\color{purple}SF} {\color{mcxs2}models lead to the same} {\color{purple}RF} {\color{mcxs2}representation through various equivalence transformations}
+\begin{align*}
+\epsilon_t &= Bu_t = B_0^{-1}u_t \\
+B_0\epsilon_t &= u_t \\
+\Sigma &= BB' = B_0^{-1}B_0^{-1\prime}
+\end{align*}
+
+\smallskip\small{\color{mcxs2}These} {\color{purple}SF} {\color{mcxs2}models have the same value of the likelihood function}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Structural VARs}
+
+\textbf{Observational Equivalence}
+
+\smallskip{\color{mcxs2}Structural models that lead to exactly the same value of the likelihood function are called} {\color{purple}observationally equivalent}
+
+$$ L({\color{purple}B_{+}},{\color{purple}B_0}|Y,X) = L({\color{purple}A},{\color{purple}B}|Y,X) = L({\color{purple}A},{\color{purple}\Sigma}|Y,X) $$
+
+\begin{align*} 
+\underset{\color{mcxs2}(N\times K)}{{\color{purple}B_{+}}} &= \begin{bmatrix} b_0 & B_1 &\dots & B_p \end{bmatrix}\\
+\underset{\color{mcxs2}(N\times K)}{{\color{purple}A}} &= \begin{bmatrix} \mu_0 & A_1 &\dots & A_p \end{bmatrix}
+\end{align*} 
+
+\end{frame}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs1}Identification} {\color{mcxs5}problem}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+\begin{frame}{Identification problem}
+
+\textbf{Estimation}
+
+{\color{mcxs2}To estimate an} {\color{purple}SF} {\color{mcxs2}model utilize the information from an easy to estimate} {\color{purple}RF} {\color{mcxs2}model and the parameter transformations}
+
+\bigskip{\color{mcxs2}Given} $B_0$ {\color{mcxs2}it is straightforward to compute autoregressive parameters by}
+\begin{align*}
+B_i&=B_0A_i \text{ \color{mcxs2} for }i=1,\dots,p\\
+b_0&=B_0\mu_0
+\end{align*}
+
+\bigskip{\color{mcxs2}Estimation of the structural matrix relies on the system of equations}
+$$\Sigma = B_0^{-1}B_0^{-1\prime}$$
+
+\end{frame}
+
+
+
+
+\begin{frame}{Identification problem}
+
+\textbf{Problem 1. Insufficient information}
+$$\Sigma = B_0^{-1}B_0^{-1\prime}$$
+
+\begin{description}
+\item[$\Sigma$] {\color{mcxs2}is a symmetric matrix and has} $N(N+1)/2$ {\color{mcxs2}unique elements\\ -- number of equations}
+
+\bigskip\item[$B_0$] {\color{mcxs2}has} $N^2$ {\color{mcxs2}elements: the system has} $N^2$ {\color{mcxs2}unknowns}
+
+\bigskip\item[$B_0$] {\color{mcxs2}and} $u_t$ {\color{mcxs2}are} {\color{purple}not identified} 
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Identification problem}
+
+\textbf{Problem 2. Identification up to a rotation matrix}
+
+\smallskip{\color{mcxs2}Let} $\tilde{B}_0= QB_0$ {\color{mcxs2}where} $Q$ {\color{mcxs2}is an} $N\times N$ {\color{mcxs2}orthogonal matrix such that} $Q'Q=I_N$ 
+\begin{align*}
+\Sigma &= \tilde{B}_0^{-1}\tilde{B}_0^{-1\prime}\\
+&= (QB_0)^{-1}(QB_0)^{-1\prime}\\
+&= B_0^{-1}Q^{-1}Q^{-1\prime}B_0^{-1\prime}\\
+&= B_0^{-1}(Q'Q)^{-1}B_0^{-1\prime}\\
+&= B_0^{-1}B_0^{-1\prime}
+\end{align*}
+
+\smallskip{\color{mcxs2}Premultiplying the} {\color{purple}SF} {\color{mcxs2}model by an orthogonal matrix} $Q$ {\color{mcxs2}does not change the value of the likelihood function -- it leads to an observationally equivalent representation}
+
+\bigskip{\color{purple}SF} {\color{mcxs2}models are often identified up to an orthogonal matrix that is a rotation matrix}
+
+\end{frame}
+
+
+
+\begin{frame}{Identification problem}
+
+\textbf{Problem 2. Identification up to a rotation matrix}
+
+\smallskip{\color{mcxs2}Premultiplying the} {\color{purple}SF} {\color{mcxs2}model by a rotation matrix} $Q$ {\color{mcxs2} leads to observationally equivalent} {\color{purple}SF} {\color{mcxs2} representation}
+
+$$ L(Q{\color{purple}B_{+}},Q{\color{purple}B_0}|Y,X) = L({\color{purple}A},{\color{purple}B}Q'|Y,X) = L({\color{purple}A},{\color{purple}\Sigma}|Y,X) $$
+
+\bigskip{\color{purple}SF} {\color{mcxs2}models are identified up to a rotation matrix}
+
+\bigskip{\color{mcxs2}Various ways of identifying} {\color{purple}SVAR}{\color{mcxs2}s set the type of the rotation matrix}
+
+\end{frame}
+
+
+
+\begin{frame}{Orthogonal matrix}
+
+{\color{mcxs2}Let} $\mathcal{O}(N)$ {\color{mcxs2}denote a set of $N\times N$ orthogonal matrices such that} $Q\in\mathcal{O}(N)$
+
+\bigskip\textbf{Properties.}
+\begin{align*}
+QQ' &= Q'Q = I_N\\
+Q_{[n\cdot]}Q_{[n\cdot]}' &= Q_{[\cdot n]}'Q_{[\cdot n]} = 1\\
+Q' &= Q^{-1}\\
+\text{det}(Q)&= \pm1
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Rotation matrix}
+
+\textbf{Definition.}\small
+
+\smallskip{\color{mcxs2}A square matrix} Q {\color{mcxs2}of order} $N$ {\color{mcxs2}is a rotation matrix if for given} $r,s:r<s<N$\small
+\begin{align*}
+Q_{rr} &= Q_{ss} = \cos(x)\\
+Q_{ii} &= 1\text{ for }i=1,\dots,N\text{ and } i\neq r,s\\
+Q_{sr} &= -\sin(x)\\
+Q_{rs} &= \sin(x)
+\end{align*}\normalsize
+{\color{mcxs2}and all other elements are zero. Other rotations are obtained by multiplying a sequence of rotation matrices.}
+
+\bigskip\normalsize\textbf{Examples of rotation matrices.}\small
+$$\begin{bmatrix} \cos(x) &-\sin(x) \\ \sin(x) & \cos(x) \end{bmatrix} \qquad \begin{bmatrix} \cos(x)&0 &-\sin(x)\\ 0&1&0 \\ \sin(x) &0& \cos(x) \end{bmatrix} $$
+
+\begin{description}
+\item[$D$] {\color{mcxs2}-- a diagonal matrix with} $\pm1$ {\color{mcxs2}on the main diagonal}
+\item[$P$] {\color{mcxs2}-- a permutation matrix with a single} 1 {\color{mcxs2}in each column and row and zeros elsewhere}
+\item[$$]
+\end{description}
+
+\end{frame}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{7.8cm}\Large
+\textbf{{\color{mcxs5}Identification of the} {\color{mcxs1}monetary policy shock}}\\
+\textbf{\color{mcxs5}using exclusion restrictions}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+ 
+
+\begin{frame}{Identification of the monetary policy shock}
+
+$$\Sigma = B_0^{-1}B_0^{-1\prime}$$
+
+\bigskip{\color{mcxs2}At least} $N(N-1)/2$ {\color{mcxs2}restrictions on} $B_0$ {\color{mcxs2}are needed to identify the system}
+
+\bigskip{\color{mcxs2}Impose exclusion (zero) restrictions to} 
+\begin{itemize}[label=\textbullet,leftmargin = *]
+\item {\color{mcxs2}obtain the identification of the system: shocks} $u_t$ {\color{mcxs2}and matrix} $B_0$
+\item {\color{mcxs2}assign shocks economic interpretation}
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{Identification of the monetary policy shock}
+
+\textbf{Monetary policy shock.}
+
+{\color{mcxs2}is often defined...} 
+\begin{itemize}[label=\textbullet,leftmargin = *]
+\item {\color{mcxs2}as an unanticipated part of the monetary policy}
+\item {\color{mcxs2}as an orthogonal shock to the monetary policy instrument}
+\item {\color{mcxs2}as an orthogonal shock to the} {\color{purple}short-run nominal interest rate} $i_t$
+\item {\color{mcxs2}through a Taylor's rule type relationship to the output gap} $\tilde{y}_t$ {\color{mcxs2}and inflation's deviation from its target value} $\pi_t$ {\color{mcxs2}in which all of the variables are treated as endogenous}
+$$ i_t = r^n + \phi_\pi \pi_t + \phi_y \tilde{y}_t + u_t^{(mp)} $$
+$r^n$ {\color{mcxs2}is a natural rate of interest}
+\item {\color{mcxs2}through a Taylor's rule using real output} $rgdp_t$ {\color{mcxs2}and prices} $p_t$
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{Identification of the monetary policy shock}
+
+{\color{mcxs2}To represent identifying restrictions consider a simplified system} 
+$$B_0y_t=u_t$$
+
+\textbf{Monetary policy shock.}
+$$
+\begin{bmatrix} b_{11} & 0 &0&0 \\ b_{21} & b_{22} &0&0 \\ b_{31}& b_{32}&b_{33}&0 \\ b_{41}& b_{42}&b_{43}&b_{44} \end{bmatrix}\begin{bmatrix}  p_t \\ rgdp_t \\ i_t \\ m_t \end{bmatrix} = \begin{bmatrix} u_{1.t}^{(as)} \\ u_{2.t}^{(ad)} \\u_{3.t}^{(mp)}  \\ u_{4.t}^{(md)}\end{bmatrix}
+$$
+
+$(as)$ {\color{mcxs2}-- aggregate supply shock}
+$(ad)$ {\color{mcxs2}-- aggregate demand shock}
+$(mp)$ {\color{mcxs2}-- monetary policy shock}
+$(md)$ {\color{mcxs2}-- money demand shock}
+
+\bigskip{\color{mcxs2}Shocks can be given economic interpretations thanks to the structure imposed on the model in the form of zero restrictions}
+
+\end{frame}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\Large
+\textbf{{\color{mcxs5}Identification using} {\color{mcxs1}exclusion restrictions}}\\[30ex]
+\small{\color{mcxs5}Based on Rubio-Ram\'irez, Waggoner \& Zha (2010)\\
+The material in this section presumes normalized systems}
+\end{adjustwidth}
+
+\end{frame}
+}
+ 
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Definitions.}
+
+\smallskip{\color{mcxs2}A parameter point} $(B_+,B_0)$ {\color{mcxs2}is {\color{purple}globally identified} if and only if there is no other parameter point that is observationally equivalent.}
+
+\bigskip{\color{mcxs2}A parameter point} $(B_+,B_0)$ {\color{mcxs2}is {\color{purple}locally identified} if and only if there is an
+open neighbourhood about} $(B_+,B_0)$ {\color{mcxs2}containing no other observationally equivalent parameter point.}
+
+\bigskip{\color{mcxs2}A parameter point} $(B_+,B_0)$ {\color{mcxs2}is} {\color{purple}partially identified} {\color{mcxs2}that is the {\color{purple}$n$th equation is globally identified }at the parameter point} $(B_+,B_0)$ {\color{mcxs2}if and only if there does not exist another observationally equivalent parameter point} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}such that} $B_{+[n\cdot]}\neq \tilde{B}_{+[n\cdot]}$ {\color{mcxs2}and} $B_{0[n\cdot]}\neq \tilde{B}_{0[n\cdot]}${\color{mcxs2}, where $X_{[n\cdot]}$ is the $n$th row of matrix $X$.}
+
+\end{frame}
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{General form of restrictions.}
+
+$$ \mathbf{R}_n f\left(B_+,B_0\right) e_n = \mathbf{0}_{R\times 1} \quad\text{ for } n=1,\dots,N $$
+
+\bigskip\begin{description}
+\item[$f\left(B_+,B_0\right)$] {\color{mcxs2}--} $R\times N$ {\color{mcxs2}matrix of functions of parameters to be restricted, e.g.:}
+\item[$f\left(B_+,B_0\right)=B_0'$] {\color{mcxs2}-- restrictions on contemporaneous relationships}
+\item[$f\left(B_+,B_0\right)=B_0^{-1}$] {\color{mcxs2}-- restrictions on contemporaneous effects}
+
+\bigskip\item[$\mathbf{R}_n$] {\color{mcxs2}--} $R\times R$ {\color{mcxs2}matrix with ones and zeros such that} $\text{rank}\left(\mathbf{R}_n\right)=r_n$\\
+{\color{mcxs2}Assume that} $r_1\geq r_2\geq \dots\geq r_N$
+
+\bigskip\item[$e_n$] {\color{mcxs2}-- the} $n${\color{mcxs2}th column of} $I_N$
+\end{description}
+
+\end{frame}
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Example.}
+
+{\color{mcxs2}Consider the restrictions on the second row of} $B_0$ {\color{mcxs2}from slide 21}
+\begin{align*}
+f\left(B_+,B_0\right)&=B_0'\\
+e_2 &= (0,1,0,0)'\\
+\mathbf{R}_2 &= \begin{bmatrix} 0&0&1&0\\0&0&0&1\\0&0&0&0\\0&0&0&0 \end{bmatrix}\\
+\downarrow&\\
+\mathbf{R}_n B_0' e_n &= \begin{bmatrix} 0&0&1&0\\0&0&0&1\\0&0&0&0\\0&0&0&0 \end{bmatrix} \begin{bmatrix} b_{21}\\b_{22}\\ b_{23}\\b_{24}\end{bmatrix} = \begin{bmatrix} b_{23}\\b_{24}\\0\\0\end{bmatrix}= \begin{bmatrix} 0\\0\\0\\0\end{bmatrix}
+\end{align*}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Conditions for} $f\left(B_+,B_0\right)$
+
+\bigskip\begin{description}
+\item[admissible] $f\left(QB_+,QB_0\right)= f\left(B_+,B_0\right)Q'$
+\item[continuously differentiable] $\text{rank}\left[f'\left(B_+,B_0\right)\right]=RN$
+\item[strongly regular] {\color{mcxs2}see Rubio-Ram\'irez, Waggoner \& Zha (2010)}
+\end{description}
+
+\end{frame}
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Rank conditions.}
+
+\smallskip{\color{mcxs2}The identification results are stated as rank conditions for matrix:}
+
+$$ \underset{\color{mcxs2}(R+n)\times N}{\mathbf{M}_n[X]} = \begin{bmatrix} \mathbf{R}_n X \\ \begin{array}{cr} I_n & \mathbf{0}_{n\times(N-n)}\end{array}\end{bmatrix} \quad\text{\color{mcxs2}for }n=1,\dots,N $$
+
+\end{frame}
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+{\color{mcxs2}The results below are the most useful for non-recursive identification patterns}
+
+\bigskip\textbf{Results.}
+
+\smallskip{\color{mcxs2}Consider parameter point} $(B_+,B_0)$ {\color{mcxs2}with imposed zero restrictions. If} $\mathbf{M}_n\left[ f\left(B_+,B_0\right) \right]$ {\color{mcxs2}is of rank} $N$ {\color{mcxs2}for $n =1,\dots,N$, then the {\color{purple}SVAR is globally identified} at the parameter point} $(B_+,B_0)$.
+
+\bigskip{\color{mcxs2}Consider parameter point} $(B_+,B_0)$ {\color{mcxs2}with imposed zero restrictions. If} $\mathbf{M}_i\left[ f\left(B_+,B_0\right) \right]$ {\color{mcxs2}is of rank} $N$ {\color{mcxs2}for $i =1,\dots,n$, then the {\color{purple}$n$th row of the SVAR is globally identified} at the parameter point} $(B_+,B_0)$.
+
+
+\end{frame}
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Example.}
+
+\smallskip{\color{mcxs2}Consider the restrictions on} $B_0$ {\color{mcxs2}from slide 21}
+\tiny
+\begin{center}
+\begin{tabular}{ccccc}
+$n=$&1&2&3&4\\[2ex]
+$\mathbf{R}_n=$&$\begin{bmatrix} 0&1&0&0\\0&0&1&0\\0&0&0&1\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&1&0\\0&0&0&1\\0&0&0&0\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&0&1\\0&0&0&0\\0&0&0&0\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&0&0\\0&0&0&0\\0&0&0&0\\0&0&0&0 \end{bmatrix}$\\[5ex]
+$\mathbf{M}_n(B_0')=$&
+$\begin{bmatrix} 0&b_{22}&b_{32}&b_{42}\\0&0&b_{33}&b_{43}\\0&0&0&b_{44}\\1&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&b_{33}&b_{43}\\0&0&0&b_{44}\\1&0&0&0\\0&1&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&0&b_{44}\\1&0&0&0\\0&1&0&0\\0&0&1&0 \end{bmatrix}$&
+$I_4$\\
+&&&&\\
+$\text{rk}(\mathbf{M}_n(B_0'))=$&4&4&4&4
+\end{tabular}
+\end{center}
+
+\normalsize
+\bigskip{\color{mcxs2}The model is globally identified}
+
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Exact identification.}
+
+\smallskip{\color{mcxs2}The results below provide simplified analysis for triangular identification patterns}
+
+\bigskip\textbf{Definition.}
+
+\smallskip{\color{mcxs2}The SVAR with zero restrictions is exactly identified if and only if, for almost any RF parameter point} $(A,\Sigma)${\color{mcxs2}, there exists a unique structural parameter point} $(B_+,B_0)$ {\color{mcxs2}such that} $\left(B_0^{-1}B_+, B_0^{-1}B_0^{-1\prime}\right)= (A,\Sigma)$
+
+
+\bigskip\textbf{Rank condition.}
+
+\smallskip{\color{mcxs2}The SVAR with zero restrictions is exactly identified if and only if} $r_n = N-n$ {\color{mcxs2}for} $n=1,\dots,N$.
+
+\end{frame}
+
+
+
+\begin{frame}{Identification using exclusion restrictions}
+
+\textbf{Example.}
+
+\smallskip{\color{mcxs2}Consider the restrictions on} $B_0$ {\color{mcxs2}from slide 21}
+\scriptsize
+\begin{center}
+\begin{tabular}{ccccc}
+$n=$&1&2&3&4\\[2ex]
+$\mathbf{R}_n=$&$\begin{bmatrix} 0&1&0&0\\0&0&1&0\\0&0&0&1\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&1&0\\0&0&0&1\\0&0&0&0\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&0&1\\0&0&0&0\\0&0&0&0\\0&0&0&0 \end{bmatrix}$&
+$\begin{bmatrix} 0&0&0&0\\0&0&0&0\\0&0&0&0\\0&0&0&0 \end{bmatrix}$\\
+&&&&\\
+$\text{rank}(\mathbf{R}_n)=$&3&2&1&0
+\end{tabular}
+\end{center}
+
+\normalsize
+\bigskip{\color{mcxs2}The model is exactly identified}
+
+\end{frame}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs5}Other ways of} {\color{mcxs1} identifying structural shocks}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+\begin{frame}{Other ways of identifying structural shocks}
+
+\begin{itemize}[label=\textbullet,leftmargin = *]
+\item {\color{purple}flexible exclusion restrictions, e.g., on long-run relationships}
+\item {\color{purple}sign restrictions}
+	\begin{itemize}[label=\textbullet,leftmargin = 0.9cm]
+	\item {\color{purple}on contemporaneous effects}
+	\item {\color{purple}flexible sign restrictions}
+	\item {\color{purple}narrative sign restrictions}
+	\end{itemize}
+\item {\color{mcxs2}using zero and sign restrictions}
+\item {\color{mcxs2}using prior distributions}
+\item {\color{mcxs2}using non-normal error terms}
+\item {\color{purple}using heteroskedastic error terms}
+\item {\color{mcxs2}using instrumental variables}
+\item {\color{mcxs2}using high-frequency data}
+\item {\color{mcxs2}using narrative sign restrictions}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs2}
+\begin{frame}{{\color{white}Structural Vector Autoregressions}}
+\begin{description}
+\item[Structural models] {\color{mcxs5}rely on economic theory that provides additional identifying information}
+
+\bigskip\item[Rank conditions] {\color{mcxs5}provide necessary and sufficient conditions for global identification of SVARs with zero restrictions}
+
+\bigskip\item[Simple conditions] {\color{mcxs5}guarantee global identification of triangular systems}
+\end{description}
+\end{frame}
+}
+
+\end{document} 

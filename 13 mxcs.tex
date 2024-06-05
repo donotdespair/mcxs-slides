@@ -1,0 +1,666 @@
+\documentclass[notes,blackandwhite,mathsans,usenames,dvipsnames]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{animate}
+\usepackage{changepage}
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\usefonttheme{default}
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=0.97\paperwidth,ht=2.25ex,dp=2ex,right]{}
+{\color{mcxs2} \insertframenumber{} / \inserttotalframenumber}
+  \end{beamercolorbox}}%
+}
+
+
+
+
+\definecolor{mcxs1}{HTML}{05386B}
+\definecolor{mcxs2}{HTML}{379683}
+\definecolor{mcxs3}{HTML}{5CDB95}
+\definecolor{mcxs4}{HTML}{8EE4AF}
+\definecolor{mcxs5}{HTML}{EDF5E1}
+\setbeamercolor{frametitle}{fg=mcxs2}
+\AtBeginDocument{\color{mcxs1}}
+
+\setbeamercolor{itemize item}{fg=mcxs1}
+\setbeamercolor{itemize subitem}{fg=mcxs2}
+\setbeamercolor{enumerate item}{fg=mcxs1}
+\setbeamercolor{description item}{fg=mcxs1}
+
+\setbeamertemplate{itemize item}[triangle]
+\setbeamertemplate{itemize subitem}[circle]
+
+
+
+
+\begin{document}
+%\fontfamily{pag}\selectfont
+%\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}
+
+\vspace{1cm}
+\begin{tabular}{rl}
+&\textbf{\LARGE\color{purple} Macroeconometrics}\\[8ex]
+\textbf{\Large Lecture 13}&\textbf{\Large\color{mcxs2}SVARs: Bayesian estimation I}\\[19ex]
+&\textbf{Tomasz Wo\'zniak}\\[1ex]
+&{\small\color{mcxs2} Department of Economics}\\
+&{\small\color{mcxs2}University of Melbourne}
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}
+
+\vspace{1cm}\textbf{\color{mcxs2}Estimating models with exclusion restrictions}
+
+\bigskip\textbf{\color{purple}Estimating models with sign restrictions}
+
+\vspace{1.5cm} Useful readings: \scriptsize
+
+\smallskip{\color{mcxs2}Rubio-Ram\'irez, Waggoner \& Zha (2010) Structural Vector Autoregressions: Theory of Identification and Algorithms for Inference, Review of Economic Studies}
+
+
+\normalsize
+\bigskip Materials: \scriptsize
+
+\smallskip{\color{mcxs2}An R file} \texttt{L13 mcxs.R} {\color{mcxs2}for the reproduction of the example for Algorithm 1 and 2}
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}
+
+\bigskip\textbf{\color{mcxs1}Objectives.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs1}To present general estimation algorithms of SVAR models with exclusion or sign restrictions}
+\item {\color{mcxs1}To work with procedures taking Bayesian estimation of VARs as a starting point}
+\item {\color{mcxs1}To introduce the identification of structural shocks using sign restrictions}
+\end{itemize}
+
+\bigskip\textbf{\color{mcxs2}Learning outcomes.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs2}Understanding the rotations of the structural system}
+\item {\color{mcxs2}Generating random draws of rotation matrices}
+\item {\color{mcxs2}Sampling random draws of parameters with appropriate restrictions}
+\end{itemize}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Bayesian VARs}
+
+\begin{align*} 
+p\left( {\color{purple}A}, {\color{purple}\Sigma}|Y,X \right) &= p({\color{purple}A}|Y,X,{\color{purple}\Sigma})p\left( {\color{purple}\Sigma}|Y,X \right)\\[2ex]
+p({\color{purple}A}|Y,X,{\color{purple}\Sigma}) &= \mathcal{MN}_{K\times N}\left( \overline{A},{\color{purple}\Sigma},\overline{V} \right)\\
+p({\color{purple}\Sigma}|Y,X) &= \mathcal{IW}_N\left( \overline{S}, \overline{\nu} \right)\\[2ex]
+\overline{V}&= \left( X'X + \underline{V}^{-1}\right)^{-1} \\
+\overline{A}&= \overline{V}\left( X'Y + \underline{V}^{-1}\underline{A} \right)\\
+\overline{\nu}&= T+\underline{\nu}\\
+\overline{S}&= \underline{S}+Y'Y + \underline{A}'\underline{V}^{-1}\underline{A} - \overline{A}'\overline{V}^{-1}\overline{A}
+\end{align*} 
+
+\end{frame}
+
+
+\begin{frame}{Bayesian Structural VARs}
+
+$$ B_0y_t = b_0 + B_1y_{t-1}+ \dots + B_py_{t-p} + u_t $$
+
+\bigskip\textbf{The concept for the sampling algorithm}
+\begin{description}
+\item[Sample] {\color{mcxs2}draws from the posterior distribution of} $(A,\Sigma)$ {\color{mcxs2}to get}
+$$ \left\{A^{(s)},\Sigma^{(s)}\right\}_{s=1}^S $$
+\item[Compute] {\color{mcxs2}draws from the posterior distribution of a triangular SVAR system}
+$$ \tilde{B}_0^{(s)} = \text{chol}\left(\left(\Sigma^{(s)}\right)^{-1}\right) \qquad
+\tilde{B}_+^{(s)} = \tilde{B}_0^{(s)}A^{(s)} $$
+\item[Compute or sample] {\color{mcxs2}an orthogonal matrix} $Q^{(s)}$ {\color{mcxs2}that is consistent with the restrictions}
+\item[Compute] {\color{mcxs2}draws of parameter matrices with desired restrictions from the target posterior distribution}
+$$ B_0^{(s)} = Q^{(s)}\tilde{B}_0^{(s)}  \qquad
+B_+^{(s)} = Q^{(s)}\tilde{B}_+^{(s)}  $$
+\end{description}
+
+\end{frame}
+
+
+
+
+
+%\begin{frame}
+%
+%\centering
+%\vspace{1cm}\Large\textbf{\color{purple}Useful distributions}
+%
+%\end{frame}
+%
+%
+%
+%\begin{frame}{Uniform-normal-inverse-Wishart distribution}
+%
+%\begin{align*}
+%y_t &= \mu_0 + A_1y_{t-1}+ \dots + A_py_{t-p} + Bu_t\\
+%u_t|Y_{t-1} &\sim iid(\mathbf{0}_N,I_N)
+%\end{align*}
+%
+%\end{frame}
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Estimating models with} {\color{mcxs1}exclusion restrictions}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Identification of models with exclusion restrictions}
+
+
+
+$$ Q{\color{mcxs2}B_0y_t} = Q{\color{mcxs2}b_0 +} Q{\color{mcxs2}B_1y_{t-1}+ \dots +} Q{\color{mcxs2}B_py_{t-p} +} Q{\color{mcxs2}u_t} $$
+
+\small
+\bigskip{\color{mcxs2}All of the structural VARs are identified up to a rotation matrix.}
+
+\bigskip{\color{mcxs2}SVARs identified with exclusion restrictions are identified to a special case of a rotation matrix, that is, a} {\color{purple}diagonal matrix with each of the diagonal elements equal to} $\pm1$
+\normalsize
+$$ Q={\color{purple}D} $$
+
+\small
+\bigskip{\color{mcxs2}Individual equations and the structural shocks are identified up to a sign.}
+
+\bigskip{\color{mcxs2}See more on} {\color{purple}normalization} {\color{mcxs2}as a solution to this problem}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions}
+
+\textbf{Algorithm 1} {\color{mcxs2}described below transforms any SF parameters} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}to parameters such that the restrictions of interests hold. These parameters are denoted by} $(B_+,B_0)$.
+
+\bigskip\textbf{Algorithm 1} {\color{purple}works for exactly identified models}{\color{mcxs2}, that is, the restrictions of interest to be imposed on the system must exactly identify the model. The appropriate conditions should be verified.}
+
+\bigskip\textbf{Algorithm 1} {\color{mcxs2}is applicable to any parameters} $(\tilde{B}_+,\tilde{B}_0)$, e.g.:
+\begin{description}
+\item[Maximum likelihood] {\color{mcxs2}estimates}
+\item[Bootstrapped] {\color{mcxs2}parameters sampled from their empirical distribution in an appropriate bootstrap procedure}
+\item[Posterior draws] {\color{mcxs2}in Bayesian inference}
+\end{description}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions}
+
+\bigskip{\color{mcxs2}Let} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}be any value of the structural parameters.}
+
+\bigskip\textbf{Algorithm 1.}\small
+\begin{description}
+\item[Step 1] {\color{mcxs2}Set} $n=1$
+\item[Step 2] {\color{mcxs2}Form matrix} 
+$$ \tilde{\mathbf{R}}_n = \begin{bmatrix} \mathbf{R}_nf(\tilde{B}_+,\tilde{B}_0) \\ q_1 \\ \vdots \\q_{n-1} \end{bmatrix} $$
+{\color{mcxs2}If} $n=1${\color{mcxs2}, then} $\tilde{\mathbf{R}}_1 = \mathbf{R}_1f(\tilde{B}_+,\tilde{B}_0)$
+\item[Step 3] {\color{mcxs2}Compute vector} $q_n=\tilde{\mathbf{R}}_{n\bot}$ {\color{mcxs2}such that} $\tilde{\mathbf{R}}_nq_n=0$\\ {\color{mcxs2}where} $X_{\bot}$ {\color{mcxs2}is the orthogonal complement of matrix} $X$ 
+\item[Step 4] {\color{mcxs2}If} $n=N${\color{mcxs2}, stop. If not, set} $n=n+1$ {\color{mcxs2}and go to} \textbf{Step 2}
+\item[Return] $Q=\begin{bmatrix} q_1' & \dots & q_N' \end{bmatrix}'\quad B_+ = Q\tilde{B}_+ \quad B_0=Q\tilde{B}_0$\\
+{\color{mcxs2}Parameters} $(B_+,B_0)$ {\color{mcxs2}are such that the restrictions hold.}
+\end{description}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Estimating models with exclusion restrictions}
+
+\textbf{Orthogonal complement matrix.}
+
+\smallskip {\color{mcxs2}To compute the orthogonal complement matrix of an} $M\times N$ {\color{mcxs2}matrix} $X$ {\color{mcxs2}where} $M>N$ 
+\begin{description}
+\item[Compute] {\color{mcxs2}the} {\color{purple}QR decomposition} {\color{mcxs2}of matrix} $X$ {\color{mcxs2}where} $Q$ {\color{mcxs2}is an orthogonal matrix}
+\item[Return] {\color{mcxs2}the last} $M-N$ {\color{mcxs2}columns of matrix} $Q$ {\color{mcxs2}as and} $(M-N)\times N$ {\color{mcxs2}matrix} $X_{\bot}$
+\end{description}
+
+\begin{verbatim}
+orthogonal.complement.matrix = function(x){
+  N       = dim(x)
+  tmp     = qr.Q(qr(x, tol = 1e-10),complete=TRUE)
+  out     = as.matrix(tmp[,(N[2]+1):N[1]])
+  return(out)
+}
+\end{verbatim}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+\bigskip\small
+{\color{mcxs2}Restrictions for IRFs on horizons} $0$ {\color{mcxs2}and} $\infty$ {\color{mcxs2}for a model with} $p=1$\footnotesize
+$$f(B_+,B_0) =\begin{bmatrix}\Theta_0\\ \Theta_{\infty}\end{bmatrix} = \begin{bmatrix}B_0^{-1}\\ (B_0-B_1)^{-1}\end{bmatrix}=
+\begin{bmatrix} 0&*&*\\ *&*&*\\ *&*&*\\ 0&0&*\\ *&*&*\\ *&*&* \end{bmatrix}$$
+\small {\color{mcxs2}Which requires setting} \tiny
+$$  
+\mathbf{R}_1 = \begin{bmatrix}1&0&0&0&0&0\\ 0&0&0&1&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\\end{bmatrix}\qquad
+\mathbf{R}_2 = \begin{bmatrix}0&0&0&0&0&0\\ 0&0&0&1&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\\end{bmatrix}\qquad
+\mathbf{R}_3 = \begin{bmatrix}0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\ 0&0&0&0&0&0\\\end{bmatrix}\qquad
+$$
+\small {\color{mcxs2}These matrices are of ranks} $r_1=2$, $r_2=1$, and $r_3=0$ {\color{mcxs2}respectively.}\\
+{\color{mcxs2}The model is} {\color{purple}exactly identified.}
+
+\smallskip {\color{mcxs2}It suffices to consider matrices with non-zero rows}
+$$  
+\mathbf{R}_1 = \begin{bmatrix}1&0&0&0&0&0\\ 0&0&0&1&0&0\end{bmatrix}\qquad
+\mathbf{R}_2 = \begin{bmatrix}0&0&0&1&0&0\end{bmatrix}\qquad
+$$
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+\small
+{\color{mcxs2}Let the estimated RF parameters} $(A,\Sigma)$ {\color{mcxs2}be:}\footnotesize
+$$A = \begin{bmatrix}0.5 & 0.5 &  0 \\-1.25& 0.25&  0\\-1& 0&  0.5\end{bmatrix}\qquad
+\Sigma=\begin{bmatrix}1& 0.5&  1\\0.5& 4.25&  2.5\\1& 2.5&  3\end{bmatrix}$$
+
+\small {\color{mcxs2}Compute initial values of SF parameters} $\tilde{B}_0=\text{chol}(\Sigma)^{-1\prime}$ {\color{mcxs2}and} $\tilde{B}_1=\tilde{B}_0A$\footnotesize
+$$\tilde{B}_1 = \begin{bmatrix}0.5&  0.5 & 0\\-0.75 & 0&  0\\-0.75& -0.5&  0.5\end{bmatrix}\qquad
+\tilde{B}_0 = \begin{bmatrix}1& 0&  0\\-0.25&  0.5& 0\\-0.75& -0.5&1\end{bmatrix}$$
+
+\smallskip\small {\color{mcxs2}These are the estimates of parameters that maximize the likelihood function or are drawn from the posterior distribution, however, they are subject to a likelihood invariant transformation by premultiplying by a rotation matrix that that will impose zero restrictions on appropriate elements.}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+{\color{mcxs2}Construct function} $f(\tilde{B}_+,\tilde{B}_0)$:
+$$f(\tilde{B}_+,\tilde{B}_0) = \begin{bmatrix}\tilde{B}_0^{-1}\\ (\tilde{B}_0-\tilde{B}_1)^{-1}\end{bmatrix}=
+\begin{bmatrix} {\color{purple}1}&0&0\\0.5&2&0\\1&1&1\\{\color{purple}1}&{\color{purple}1}&0\\-1&1&0\\0&0&2 \end{bmatrix}$$
+
+{\color{mcxs2}And proceed to} \textbf{Algorithm 1.}
+
+\end{frame}
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+\textbf{Iteration:} $n=1$\small
+$$\tilde{\mathbf{R}}_1 = \mathbf{R}_1f(\tilde{B}_+,\tilde{B}_0) = \begin{bmatrix}1&0&0&0&0&0\\ 0&0&0&1&0&0\end{bmatrix} \begin{bmatrix} 1&0&0\\0.5&2&0\\1&1&1\\1&1&0\\-1&1&0\\0&0&2 \end{bmatrix} = \begin{bmatrix} 1&0&0\\1&1&0 \end{bmatrix}$$
+
+$$ q_1 = \begin{bmatrix} 1&0&0\\1&1&0 \end{bmatrix}_{\bot} = \begin{bmatrix} 0&0&1 \end{bmatrix} $$
+
+\smallskip\normalsize {\color{mcxs2}The vector above is the first row of rotation matrix} $Q$ {\color{mcxs2}that will rotate} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}assigning it the correct restrictions.}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+\textbf{Iteration:} $n=2$\small
+$$\tilde{\mathbf{R}}_2 = \begin{bmatrix}\mathbf{R}_2f(\tilde{B}_+,\tilde{B}_0) \\ q_1\end{bmatrix} = \begin{bmatrix} 1&1&0\\0&0&1 \end{bmatrix}$$
+
+$$ q_2 = \begin{bmatrix} 1&1&0\\0&0&1 \end{bmatrix}_{\bot} = \begin{bmatrix} -0.7071068&0.7071068&0 \end{bmatrix} $$
+
+\normalsize\bigskip\textbf{Iteration:} $n=3$\small
+$$\tilde{\mathbf{R}}_3 = \begin{bmatrix} q_1\\q_2\end{bmatrix} = \begin{bmatrix} 0&0&1 \\-0.7071068&0.7071068&0 \end{bmatrix}$$
+
+$$ q_3 = \begin{bmatrix} 0&0&1 \\-0.7071068&0.7071068&0 \end{bmatrix}_{\bot} = \begin{bmatrix} -0.7071068&-0.7071068&0 \end{bmatrix} $$
+
+\end{frame}
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+\textbf{Return} parameter matrices:
+\begin{align*}
+Q &= \begin{bmatrix}q_1\\q_2\\q_3\end{bmatrix} = \begin{bmatrix} 0&0&1 \\-0.7071068&0.7071068&0 \\-0.7071068&-0.7071068&0 \end{bmatrix}\\[2ex]
+B_0 &= Q\tilde{B}_0 = \begin{bmatrix} -0.75&-0.5&1\\-0.884&0.354&0\\-0.53&-0.354&0 \end{bmatrix}\\[2ex]
+B_1 &= Q\tilde{B}_1 = \begin{bmatrix} -0.75&-0.5&0.5\\-0.884&-0.354&0\\0.177&-0.354&0 \end{bmatrix}
+\end{align*}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Estimating models with exclusion restrictions: example}
+
+\textbf{Verify} IRFs:
+\begin{align*}
+\Theta_0 = B_0^{-1} &= \begin{bmatrix} {\color{purple}0}&-0.707&-0.707\\0&1.061&-1.768\\1&0&-1.414 \end{bmatrix}\\[2ex]
+\Theta_{\infty} = (B_0 - B_1)^{-1} &= \begin{bmatrix} {\color{purple}0}&{\color{purple}0}&-1.414\\0&1.414&0\\2&0&0 \end{bmatrix}
+\end{align*}
+
+\end{frame}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Estimating models with} {\color{mcxs1}sign restrictions}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions}
+
+\textbf{Sign restrictions.}
+$$ \mathbf{R}_n f\left(B_+,B_0\right) e_n > \mathbf{0}_{R\times 1} \quad\text{ for } n=1,\dots,N $$
+
+\small\smallskip
+\begin{description}
+\item[Provide identification]{\color{mcxs2} of the structural shocks without the need to impose strict exclusion restrictions that might be controversial}
+\item[Are motivated] {\color{mcxs2}by economic theory and empirical stylized facts}
+\item[Set identify] {\color{mcxs2}the model, that is, for any set of sign restrictions, given a parameter point} $(B_+,B_0)$ {\color{mcxs2}that satisfies such restrictions, there always exists an orthogonal matrix} $Q${\color{mcxs2}, arbitrarily close to an identity matrix, such that} $(QB_+,QB_0)$ {\color{mcxs2}will also satisfy the sign restrictions.}
+\item[Set identification] {\color{mcxs2}implies that there is a non-empty set of orthogonal matrices} $Q\in\mathbb{O}\subset\mathcal{O}(N)$ {\color{mcxs2}that satisfy the sign restrictions.}
+\item[Estimation] {\color{mcxs2}procedure has to efficiently exploit set} $\mathbb{O}$
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions}
+
+\textbf{Sign restrictions: Example 1}
+
+\smallskip\footnotesize Uhlig (2005) {\color{mcxs2}What are the effects of monetary policy on output? Results from an agnostic identification procedure, Journal of Monetary Economics}
+
+\bigskip\normalsize\textbf{Variables in} $y_t$
+
+\smallskip 	$rgdp_t$ {\color{mcxs2}-- real GDP,} $tr_t$ {\color{mcxs2}-- total reserves,} $p_t$ {\color{mcxs2}-- GDP price deflator,} $nbr_t$ {\color{mcxs2}-- non-borrowed reserves,} $cpi_t$ {\color{mcxs2}-- commodity price index,}\\ $FFR_t$ {\color{mcxs2}-- federal funds rate}
+
+\bigskip\normalsize\textbf{Sign restrictions for the monetary policy shock}
+
+\smallskip {\color{mcxs2}A monetary policy impulse vector is an impulse vector} $u$ {\color{mcxs2}so that the} {\color{purple}impulse responses} {\color{mcxs2}to} $u$ {\color{mcxs2}of} {\color{purple}prices and non-borrowed reserves are not positive} {\color{mcxs2}and the} {\color{purple}impulse responses for the federal funds rate are not negative}{\color{mcxs2}, all at horizons} $i=0,1,\dots,h$.
+
+\end{frame}
+
+
+\begin{frame}{Estimating models with sign restrictions}
+
+\textbf{Sign restrictions: Example 2}
+
+\smallskip\footnotesize Canova, Paustian (2011) {\color{mcxs2}Business cycle measurement with some theory, Journal of Monetary Economics}
+
+\bigskip\normalsize\textbf{Sign restrictions}
+$$
+\begin{bmatrix} i_t \\ rw_t \\ \pi_t \\ rgdp_t \\ hw_t \end{bmatrix} = 
+\begin{bmatrix}
++&+&+&-&*\\
+-&+&-&+&*\\
++&-&+&-&*\\
+-&-&+&+&*\\
+-&-&+&-&*
+ \end{bmatrix}
+\begin{bmatrix}u_t^{markup} \\ u_t^{monetary} \\ u_t^{taste} \\ u_t^{technology} \\ u_t^{measurement}  \end{bmatrix}
+$$
+
+$i_t$ {\color{mcxs2}-- interest rate,} $rw_t$ {\color{mcxs2}-- real wage,} $\pi_t$ {\color{mcxs2}-- inflation,}\\ $rgdp_t$ {\color{mcxs2}-- real output,} $hw_t$ {\color{mcxs2}-- hours worked}
+\end{frame}
+
+
+
+\begin{frame}{Useful distribution: Haar}
+
+\textbf{Definition.}
+
+\smallskip {\color{mcxs2}Haar distribution is a} {\color{purple}uniform distribution over the space of orthogonal matrices} $\mathcal{O}(N)$
+
+\bigskip\textbf{Random number generator.}
+
+\smallskip {\color{mcxs2}Let} $X$ {\color{mcxs2}be an} $N\times N$ {\color{mcxs2}random matrix with each element having an independent standard normal distribution. Let} $X =QR$ {\color{mcxs2}be the QR decomposition of} $X$ {\color{mcxs2}with the diagonal of} $R$ {\color{mcxs2}normalized to be positive. The random matrix $Q$ is orthogonal and is a draw from the uniform distribution over} $\mathcal{O}(N)$.
+
+\end{frame}
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions}
+
+\bigskip\textbf{Algorithm 2} {\color{mcxs2}described below transforms any SF parameters} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}to parameters such that the restrictions of interests hold. These parameters are denoted by} $(B_+,B_0)$.
+
+\bigskip\textbf{Algorithm 2} {\color{mcxs2}works for set identified models with the sign restrictions.}
+
+\bigskip\textbf{Algorithm 2} {\color{mcxs2}is applicable to any parameters} $(\tilde{B}_+,\tilde{B}_0)${\color{mcxs2}, e.g.:}
+\begin{description}
+\item[Bootstrapped] {\color{mcxs2}parameters, that is, parameters sampled from their empirical distribution in an appropriate bootstrap procedure}
+\item[Posterior draws] {\color{mcxs2}in Bayesian inference}
+\end{description}
+
+\bigskip\textbf{Algorithm 2} {\color{mcxs2}is not designed for the MLE. Apply all of the recommendations from\\ \small Fry, Pagan (2011) Sign Restrictions in Structural Vector Autoregressions: A Critical Review, \emph{Journal of Economic Literature}}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions}
+
+{\color{mcxs2}Let} $(\tilde{B}_+,\tilde{B}_0)$ {\color{mcxs2}be any value of the structural parameters.}
+
+\bigskip\textbf{Algorithm 2.}\small
+\begin{description}
+\item[Step 1] {\color{mcxs2}Draw an independent standard normal} $N\times N$ {\color{mcxs2}matrix} $X$ {\color{mcxs2}and let} $X=QR$ {\color{mcxs2}be the QR decomposition of} $X$ {\color{mcxs2}with the diagonal of $R$ normalized to be positive.}
+
+\item[Step 2] {\color{mcxs2}Use matrix} $Q$ {\color{mcxs2}to compute parameters} $B_0 = Q\tilde{B}_0$, $B_+=Q\tilde{B}_+$ {\color{mcxs2}and the corresponding impulse responses that are subject to sign restrictions.}
+
+\item[Step 3] {\color{mcxs2}If these parameters and impulse responses do not satisfy the sign restrictions, return to} \textbf{Step 1 }
+
+\item[Return] {\color{mcxs2}parameters} $(B_+,B_0)$ 
+\end{description}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions: example}
+
+{\color{mcxs2}Consider restrictions on IRFs on horizons} $0$ {\color{mcxs2}and} $1$\footnotesize
+$$f(B_+,B_0) =\begin{bmatrix}\Theta_0\\ \Theta_1\end{bmatrix} = \begin{bmatrix}B_0^{-1}\\ B_0^{-1}B_1B_0^{-1}\end{bmatrix}=
+\begin{bmatrix} -&*&*\\ -&*&*\\ +&*&*\\ -&*&*\\ -&*&*\\ +&*&* \end{bmatrix}$$
+\normalsize {\color{mcxs2}Which requires setting} \footnotesize
+$$\mathbf{R}_1 = \begin{bmatrix} 
+-1&0&0&0&0&0\\  
+0&-1&0&0&0&0\\
+0&0&1&0&0&0\\
+0&0&0&-1&0&0\\
+0&0&0&0&-1&0\\
+0&0&0&0&0&1\\
+\end{bmatrix}$$
+\normalsize {\color{mcxs2}so that} $\mathbf{R}_1f(B_+,B_0)e_1>0$ {\color{mcxs2}imposes the required restrictions.}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions: example}
+\small
+{\color{mcxs2}Let the estimated RF parameters} $(A,\Sigma)$ {\color{mcxs2}be:}\footnotesize
+$$A = \begin{bmatrix}0.5 & 0.5 &  0 \\-1.25& 0.25&  0\\-1& 0&  0.5\end{bmatrix}\qquad
+\Sigma=\begin{bmatrix}1& 0.5&  1\\0.5& 4.25&  2.5\\1& 2.5&  3\end{bmatrix}$$
+
+\small {\color{mcxs2}Compute initial values of SF parameters} $\tilde{B}_0=\text{chol}(\Sigma)^{-1\prime}$ {\color{mcxs2}and} $\tilde{B}_1=\tilde{B}_0A$\footnotesize
+$$\tilde{B}_1 = \begin{bmatrix}0.5&  0.5 & 0\\-0.75 & 0&  0\\-0.75& -0.5&  0.5\end{bmatrix}\qquad
+\tilde{B}_0 = \begin{bmatrix}1& 0&  0\\-0.25&  0.5& 0\\-0.75& -0.5&1\end{bmatrix}$$
+
+\smallskip\small {\color{mcxs2}These are the estimates of parameters that coming from a bootstrap procedure or that are drawn from the posterior distribution, however, they are subject to a likelihood invariant transformation by premultiplying by a rotation matrix  that will impose sign restrictions on appropriate elements.}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Estimating models with sign restrictions: example}
+
+{\color{mcxs2}Construct function} $f(\tilde{B}_+,\tilde{B}_0)$:
+$$f(\tilde{B}_+,\tilde{B}_0) = \begin{bmatrix}\tilde{B}_0^{-1}\\ \tilde{B}_0^{-1}\tilde{B}_1\tilde{B}_0^{-1}\end{bmatrix}=
+\begin{bmatrix} {\color{purple}1}&0&0\\{\color{purple}0.5}&2&0\\{\color{purple}1}&1&1\\{\color{purple}0.75}&1&0\\{\color{purple}-1.125}&0.5&0\\{\color{purple}-0.5}&0.5&0.5 \end{bmatrix}$$
+
+{\color{mcxs2}And proceed to} \textbf{Algorithm 2.}
+
+\end{frame}
+
+
+\begin{frame}{Estimating models with sign restrictions: example}
+
+{\color{mcxs2}After} 118 {\color{mcxs2}iterations the algorithm returned matrices} \scriptsize
+$$ X = \begin{bmatrix}
+-0.184& -0.797&  1.060\\
+-1.702&  0.957& -0.494\\
+2.354& -1.295&  1.084
+\end{bmatrix}\qquad
+Q=
+\begin{bmatrix}
+-0.063& -0.585&  0.809\\
+-0.998&  0.052& -0.040\\
+0.019&  0.810&  0.587
+\end{bmatrix}
+ $$
+ 
+\normalsize {\color{mcxs2}that give} \scriptsize
+$$ B_0 = \begin{bmatrix}
+-0.523& -0.697&  0.809\\
+-0.981&  0.046& -0.040\\
+-0.624&  0.111&  0.587
+\end{bmatrix}\qquad
+B_1=
+\begin{bmatrix}
+-0.200& -0.436&  0.404\\
+-0.508& -0.479& -0.020\\
+-1.038& -0.284&  0.293
+\end{bmatrix}
+ $$
+ 
+\normalsize {\color{mcxs2}and} \scriptsize
+$$ \Theta_0 = \begin{bmatrix}
+{\color{purple}-0.063}& -0.998& 0.019\\
+{\color{purple}-1.201}& -0.395& 1.628\\
+{\color{purple}0.161}& -0.986& 1.415\\
+\end{bmatrix}\qquad
+\Theta_1=
+\begin{bmatrix}
+{\color{purple}-0.632}& -0.696& 0.823\\
+{\color{purple}-0.221}&  1.149& 0.384\\
+{\color{purple}0.144}&  0.505& 0.689	
+\end{bmatrix}
+ $$
+ 
+\end{frame}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs3}
+\begin{frame}{Structural VARs: Bayesian estimation I}
+\begin{description}
+\item[Algorithms] {\color{mcxs2}proposed by} Rubio-Ram\'irez, Waggoner \& Zha (2010) {\color{mcxs2}allow the estimation under a great flexibility in the type of identification patterns for SVARs }
+
+\bigskip\item[Estimation] {\color{mcxs2}procedures are relatively quick, follow simple algorithms and apply to both frequentist and Bayesian approaches}
+
+\bigskip\item[Computations] {\color{mcxs2}of IRFs and FEVDs are straightforward. }
+
+\bigskip\item[Model comparison and selection] {\color{mcxs2}requires alternative procedures.}
+\end{description}
+\end{frame}
+}
+
+
+\end{document} 

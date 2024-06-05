@@ -1,0 +1,562 @@
+\documentclass[notes,blackandwhite,mathsans,usenames,dvipsnames]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{animate}
+\usepackage{changepage}
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\usefonttheme{default}
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=0.97\paperwidth,ht=2.25ex,dp=2ex,right]{}
+{\color{mcxs2} \insertframenumber{} / \inserttotalframenumber}
+  \end{beamercolorbox}}%
+}
+
+
+\definecolor{mcxs1}{HTML}{05386B}
+\definecolor{mcxs2}{HTML}{379683}
+\definecolor{mcxs3}{HTML}{5CDB95}
+\definecolor{mcxs4}{HTML}{8EE4AF}
+\definecolor{mcxs5}{HTML}{EDF5E1}
+\setbeamercolor{frametitle}{fg=mcxs2}
+\AtBeginDocument{\color{mcxs1}}
+\setbeamertemplate{itemize item}[triangle]
+
+\begin{document}
+%\fontfamily{pag}\selectfont
+%\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\vspace{1cm}
+\begin{tabular}{rl}
+&\textbf{\LARGE\color{mcxs2} Macroeconometrics}\\[8ex]
+\textbf{\Large\color{mcxs2}Lecture 16}&\textbf{\Large\color{mcxs1}Unobserved Component models}\\[19ex]
+&\textbf{Tomasz Wo\'zniak}\\[1ex]
+&{\small\color{mcxs1} Department of Economics}\\
+&{\small\color{mcxs1}University of Melbourne}
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\vspace{1cm}\textbf{\color{mcxs1}A simple Unobserved Component model}
+
+\bigskip\textbf{\color{lightgray}Identification and unconditional moments}
+
+\bigskip\textbf{\color{mcxs1}UC model and Beveridge-Nelson decomposition}
+
+
+\vspace{1cm} Useful readings: \small
+
+\smallskip{\color{lightgray}Morley, Nelson, Zivot (2003) Why Are the Beveridge-Nelson and Unobserved-Components Decompositions of GDP so Different?\\ Review of Economics and Statistics}
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\bigskip\textbf{\color{mcxs1}Objectives.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs1}To present the elements of the unobserved component model}
+\item {\color{mcxs1}To provide framework for the business-cycle decomposition }
+\item {\color{mcxs1}To look at the identification of the parameters of UC models}
+\end{itemize}
+
+\bigskip\textbf{\color{lightgray}Learning outcomes.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{lightgray}Implementing decomposition into unit-root stationary and non-stationary component}
+\item {\color{lightgray}Specifying the cycle component}
+\item {\color{lightgray}Understanding stochastic trend through the Beveridge-Nelson decomposition}
+\end{itemize}
+
+\end{frame}
+}
+ 
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+
+\bigskip
+\begin{center}
+\begin{tabular}{ c l}
+\toprule 
+\multicolumn{2}{c}{\textbf{Modeling Trend Inflation}}\\
+16  & Unobserved Component models \\
+17  & Bayesian estimation using precision sampler \\
+18  & Bayesian estimation using precision sampler \\
+19  & Modeling trend inflation \\[1ex]
+\multicolumn{2}{c}{\textbf{Modeling Conditional Heteroskedasticity}}\\
+20  & Stochastic Volatility models \\
+21  & Bayesian estimation using auxiliary mixtures \\[1ex]
+\bottomrule
+\end{tabular}
+\end{center}
+
+
+\end{frame}
+}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{lightgray}A simple} {\color{mcxs1}Unobserved Component} {\color{lightgray} model}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+$$
+\begin{array}{rlll}
+y_t &= \tau_t + \epsilon_t&&\text{\color{mcxs2}-- measurement equation}\\[1ex]
+\tau_t &= \mu + \tau_{t-1} + \eta_t&&\text{\color{mcxs2}-- state equation for }\tau_t\\[1ex]
+\alpha_p(L)\epsilon_t &=  e_t&&\text{\color{mcxs2}-- state equation for }\epsilon_t\\[1ex]
+\eta_t|Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_\eta^2\right)&&\text{\color{mcxs2}-- conditional distribution}\\[1ex]
+e_t |Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_e^2\right)&&\text{\color{mcxs2}-- conditional distribution}\\[5ex]
+\alpha_p(L) &= 1-\alpha_1L - \dots - \alpha_pL^p&&\text{\color{mcxs2}-- lag polynomial}\\[1ex]
+\alpha_p(z)&=0\text{, } \forall |z|>1\text{ and }z\in\mathbb{C}&&\text{\color{mcxs2}-- stationarity restriction}\\[1ex]
+\sigma_{\eta e}&= \mathbb{C}ov[\eta_t,e_t]&&\text{\color{mcxs2}-- potential correlation}\\[1ex]
+\theta&=\left(\mu,\alpha_1,\dots,\alpha_p,\sigma_\eta^2,\sigma_e^2\right)&&\text{\color{mcxs2}-- parameters}\\
+\end{array}
+$$
+\end{frame}
+
+
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\begin{description}
+\item[$y_t$] {\color{mcxs2}-- an observation on a scalar random variable at time $t$ }
+\item[$\tau_t$] {\color{mcxs2}-- trend component -- unit-root non-stationary}
+\item[$\epsilon_t$] {\color{mcxs2}-- unit-root stationary component }
+\item[$\eta_t, e_t$] {\color{mcxs2}-- Gaussian white noise error terms }
+\item[$\mu$] {\color{mcxs2}-- a drift  parameter}
+\item[$Y_{t-1}$] {\color{mcxs2}-- information set}
+\end{description}
+\end{frame}
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\textbf{Measurement equation.}
+$$y_t = \tau_t + \epsilon_t$$
+
+\begin{description}
+\item[Decomposes] {\color{mcxs2}the process into a unit-root non-stationary and a~unit-root stationary component}
+\item[Contains measurements] {\color{mcxs2}on variable} $y_t$ {\color{mcxs2}on the left-hand side of the equation}
+\item[Includes latent processes] $\tau_t$ {\color{mcxs2}and} $\epsilon_t$ {\color{mcxs2}on the right-hand side}
+\end{description}
+\end{frame}
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\bigskip
+\textbf{Trend component.}
+\begin{align*}
+\tau_t &= \mu + \tau_{t-1} + \eta_t\\
+\eta_t|Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_\eta^2\right)
+\end{align*}
+
+%\small
+\bigskip\begin{description}
+\item[Trend process] {\color{mcxs2}is specified as a Gaussian random walk with drift process }
+\item[Captures] {\color{mcxs2}the long-run forecast of} $y_t$ {\color{mcxs2}at an infinite horizon with the forecast origin} $t$
+\item[The drift] {\color{mcxs2}captures the deterministic time trend slope of} $y_t$ {\color{mcxs2}and is often specified to change over time to represent a~structural break in the deterministic trend or allow } $y_t$ {\color{mcxs2}to have two unit roots.  The extended specification is often given by} 
+\begin{align*}
+\tau_t &= \mu_t + \tau_{t-1} + \eta_t\\
+\mu_t &= \mu_{t-1} + m_t\\
+m_t|Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_m^2\right)
+\end{align*}
+\end{description}
+\end{frame}
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\textbf{Unit-root stationary component.}
+\begin{align*}
+\alpha_p(L)\epsilon_t &=  e_t\\[1ex]
+e_t |Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_e^2\right)\\[1ex]
+\alpha_p(z)&=0,\qquad \forall |z|>1\text{{\color{mcxs2}, and} }z\in\mathbb{C}
+\end{align*}
+
+\begin{description}
+\item[Captures] {\color{mcxs2}the deviations from the long-run trend}
+\item[Exhibits persistence] {\color{mcxs2}which allows to smoothen the trend }
+\item[UC model] {\color{mcxs2}is called a} {\color{purple}local level model} {\color{mcxs2}when} $p=0\text{\color{mcxs2}, or }p=1$
+\item[$\epsilon_t$ is called a cycle] {\color{mcxs2}if } $p\geq2$ {\color{mcxs2}when it can capture cyclical patterns in} $\epsilon_t$
+\end{description}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\bigskip
+\textbf{Unobserved component model.}
+$$
+\begin{array}{rl}
+y_t &= \tau_t + \epsilon_t\\[1ex]
+\tau_t &= \mu + \tau_{t-1} + \eta_t\\[1ex]
+\alpha_p(L)\epsilon_t &=  e_t\\[1ex]
+\eta_t|Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_\eta^2\right)\\[1ex]
+e_t |Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_e^2\right)
+\end{array}
+$$
+
+\bigskip\textbf{Autoregressive model} obtained by imposing $\sigma_\eta^2=0$
+$$
+\begin{array}{rl}
+y_t -\mu t &= \epsilon_t\\[1ex]
+\alpha_p(L)\epsilon_t &=  e_t\\[1ex]
+e_t |Y_{t-1} &\sim iid\mathcal{N}\left(0,\sigma_e^2\right)
+\end{array}
+$$
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{lightgray}Identification and} {\color{mcxs1}unconditional moments}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+\begin{frame}{Unconditional moments}
+
+\begin{description}
+\item[Unobserved component model] {\color{mcxs2}captures a~single unit-root of} $y_t$
+\item[Unconditional moments] {\color{mcxs2}for} $y_t$ {\color{mcxs2}depend on time and the variances can be shown to not be well-specified\\ -- they take infinite values}
+\item[Consider a model] {\color{mcxs2}for the first differences} $\Delta y_t$
+\begin{align*}
+\Delta y_t &= \Delta \tau_t + \Delta \epsilon_t\\[1ex]
+\Delta \tau_t &= \mu + \eta_t\\[1ex]
+\alpha_p(L)\Delta \epsilon_t &= \Delta e_t\\[1ex]
+\Delta e_t|Y_{t-1}&\sim\mathcal{N}\left(0,2\sigma_e^2\right)
+\end{align*}
+{\color{mcxs2}where} $\Delta=1-L$
+\end{description}
+
+\end{frame}
+
+
+\begin{frame}{Unconditional moments}
+
+\begin{description}
+\item[Rewrite] {\color{mcxs2}the system as}
+\begin{align*}
+\alpha_p(L)\Delta \epsilon_t &=  \Delta e_t\\[1ex]
+\Delta \epsilon_t &= \Delta y_t - \mu - \eta_t 
+\end{align*}
+\item[Plug in] {\color{mcxs2}the second equation into the first one and reorganize elements}
+\begin{align*}
+\alpha_p(L)(\Delta y_t - \mu) &= \alpha_p(L)\eta_t + e_t - e_{t-1}
+\end{align*}
+\item[To obtain] {\color{mcxs2}the} {\color{purple}ARIMA($p,1,\max\{p,1\}$) representation of the UC model}
+
+\bigskip\item[ARIMA(p,d,q)] {\color{mcxs2}model is given by}
+$$ \alpha_p(L)\Delta^d (y_t-\mu) = \beta_q(L)\varepsilon_t $$
+{\color{mcxs2}where} $d$ {\color{mcxs2}is the integration order} $y_t\sim I(d)$ {\color{mcxs2}and} $\Delta^d = (1-L)^d$
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Unconditional moments}
+
+\textbf{Unconditional mean.}
+\begin{align*}
+\alpha_p(L)(\Delta y_t-\mu) &= \alpha_p(L)\eta_t + \Delta e_t\\[2ex]
+\alpha_p(L)\mathbb{E}[\Delta y_t-\mu] &= \alpha_p(L)\mathbb{E}[\eta_t] + \mathbb{E}[\Delta e_t]\\
+&\overset{LIE}{=} 0\\[2ex]
+\mathbb{E}[\Delta y_t] &=\mu
+\end{align*}
+
+\bigskip\begin{description}
+\item[$\mu$] {\color{mcxs2}is the average growth rate of} $y_t$ {\color{mcxs2}over one period}
+\end{description}
+
+\end{frame}
+
+
+
+\begin{frame}{Identification: matching autocovariances}
+
+$$
+\alpha_p(L)(\Delta y_t - \mu) = \alpha_p(L)\eta_t + \Delta e_t
+$$
+
+\begin{description}
+\item[LHS] {\color{mcxs2}of the equation specifies a standard AR dynamics of} $\Delta y_t - \mu$
+\item[LHS] {\color{mcxs2}parameters} $\alpha_1,\dots,\alpha_p$ {\color{mcxs2}can be easily estimated}
+\item[RHS] {\color{mcxs2}of the equation specifies the MA($\max\{p,1\}$) component}
+$\beta_{\max\{p,1\}}(L) = 1+\beta_1L + \dots + \beta_{\max\{p,1\}}L^{\max\{p,1\}}$
+\item[RHS] {\color{mcxs2}of the equation is written as}
+$$ rhs_t = \alpha_p(L)\eta_t + e_t - e_{t-1} $$
+\item[Derive the relationship] {\color{mcxs2}between the parameters on the equation above to the unconditional autocovariances of} $rhs_t$ {\color{mcxs2}for two cases} $p=1$ {\color{mcxs2}and} $p=2$ {\color{mcxs2}to estimate} $\sigma_\eta^2,\sigma_e^2,\sigma_{\eta e}$
+\end{description}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Identification: matching autocovariances}
+
+\textbf{Case 1:} $p=1$ \scriptsize
+\begin{align*}
+rhs_t &= \eta_t - \alpha_1 \eta_{t-1} + e_t - e_{t-1}\\[3ex]
+\gamma_s^r &= \mathbb{E}[rhs_t \cdot rhs_{t-s}]\\[3ex]
+s=0 \qquad \gamma_0^r &= \mathbb{E}\left[rhs_t ^2\right] = \mathbb{E}\left[(\eta_t - \alpha_1 \eta_{t-1} + e_t - e_{t-1})^2\right]\\
+&= \left(1+\alpha_1^2\right)\sigma^2_\eta + 2\sigma^2_e + 2\left(1+\alpha_1\right)\sigma_{\eta e}\\[3ex]
+s=1 \qquad \gamma_1^r &= \mathbb{E}\left[rhs_t \cdot rhs_{t-1}\right] \\
+&= \mathbb{E}\left[(\eta_t - \alpha_1 \eta_{t-1} + e_t - e_{t-1})(\eta_{t-1} - \alpha_1 \eta_{t-2} + e_{t-1} - e_{t-2})\right]\\
+&= -\alpha_1\sigma^2_\eta -\sigma^2_e -\left(1+\alpha_1\right)\sigma_{\eta e}\\[3ex]
+s\geq 2 \qquad \gamma_s^r &=0
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Identification: matching autocovariances}
+
+\textbf{Case 1:} $p=1$ 
+\begin{align*}
+\begin{bmatrix} \gamma^r_0 \\ \gamma^r_1 \end{bmatrix} = 
+\begin{bmatrix} 1+\alpha_1^2 & 2 & 2(1+\alpha_1) \\  -\alpha_1 & -1 & -(1+\alpha_1) \end{bmatrix}
+\begin{bmatrix} \sigma^2_\eta \\ \sigma^2_e \\ \sigma_{\eta e} \end{bmatrix}
+\end{align*}
+
+\begin{description}
+\item[Autocovariances] {\color{mcxs2}on the LHS are features of data and the autoregressive parameter} $\alpha_1$
+\item[Variances and covariance] {\color{mcxs2}on the RHS are the parameters of the UC model}
+\item[The UC model] {\color{mcxs2}is} {\color{purple}not identified} {\color{mcxs2}and one identifying restriction is required}
+\item[Identifying restriction] {\color{mcxs2}is often chose to be} $\sigma_{\eta e}=0$ {\color{mcxs2}imposing the independence of the shocks of the model}
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Identification: matching autocovariances}
+
+\bigskip\textbf{Case 2:} $p=2$ \scriptsize
+\begin{align*}
+rhs_t &= \eta_t - \alpha_1 \eta_{t-1} - \alpha_2 \eta_{t-2} + e_t - e_{t-1}\\[3ex]
+\gamma_s^r &= \mathbb{E}[rhs_t \cdot rhs_{t-s}]\\[3ex]
+\gamma_0^r &= \mathbb{E}\left[rhs_t ^2\right] = \mathbb{E}\left[(\eta_t - \alpha_1 \eta_{t-1}- \alpha_2 \eta_{t-2} + e_t - e_{t-1})^2\right]\\
+&= \left(1+\alpha_1^2+\alpha_2^2\right)\sigma^2_\eta + 2\sigma^2_e + 2\left(1+\alpha_1\right)\sigma_{\eta e}\\[3ex]
+\gamma_1^r &= \mathbb{E}\left[rhs_t \cdot rhs_{t-1}\right]\\
+& = \mathbb{E}\left[(\eta_t - \alpha_1 \eta_{t-1}- \alpha_2 \eta_{t-2} + e_t - e_{t-1})(\eta_{t-1} - \alpha_1 \eta_{t-2}- \alpha_2 \eta_{t-3} + e_{t-1} - e_{t-2})\right]\\
+&= \alpha_1\left(\alpha_2-1\right)\sigma^2_\eta -\sigma^2_e - \left(1+\alpha_1-\alpha_2\right)\sigma_{\eta e}\\[3ex]
+\gamma_2^r &= \mathbb{E}\left[rhs_t \cdot rhs_{t-2}\right]\\
+& = \mathbb{E}\left[(\eta_t - \alpha_1 \eta_{t-1}- \alpha_2 \eta_{t-2} + e_t - e_{t-1})(\eta_{t-2} - \alpha_1 \eta_{t-3}- \alpha_2 \eta_{t-4} + e_{t-2} - e_{t-3})\right]\\
+&= -\alpha_2\sigma^2_\eta -\alpha_2\sigma_{\eta e}\\[3ex]
+\gamma_s^r &= 0 \text{ for } s\geq3
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Identification: matching autocovariances}
+
+\textbf{Case 2:} $p=2$ 
+\begin{align*}
+\begin{bmatrix} \gamma^r_0 \\ \gamma^r_1 \\ \gamma^r_2 \end{bmatrix} = 
+\begin{bmatrix} 1+\alpha_1^2+\alpha_2^2 & 2 & 2(1+\alpha_1) \\  \alpha_1(\alpha_2-1) & -1 & -(1+\alpha_1 -\alpha_2) \\ -\alpha_2 & 0 & -\alpha_2 \end{bmatrix}
+\begin{bmatrix} \sigma^2_\eta \\ \sigma^2_e \\ \sigma_{\eta e} \end{bmatrix}
+\end{align*}
+
+\begin{description}
+\item[Autocovariances] {\color{mcxs2}on the LHS are features of data and }
+\item[consistent estimates of parameters] $\alpha_1, \alpha_2$ {\color{mcxs2}are functions of data only}
+\item[Variances and covariance] {\color{mcxs2}on the RHS are the parameters of the UC model}
+\item[The UC model] {\color{mcxs2}is} {\color{purple}identified}
+\item[Restriction] $\sigma_{\eta e}=0$ {\color{mcxs2}is dispensable as it over identifies the model}
+\end{description}
+
+\end{frame}
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{lightgray}UC model and} {\color{white}Beveridge-Nelson decomposition}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Beveridge-Nelson decomposition}
+
+\textbf{Definition.}
+
+\smallskip{\color{mcxs2}The} BN {\color{mcxs2}estimate of trend for a time series integrated of order one,} $y_t\sim I(1)${\color{mcxs2}, is defined to be the limiting forecast as horizon goes to infinity adjusted for the mean rate of growth:}
+\begin{align*}
+BN_t = \lim_{h\rightarrow\infty}\mathbb{E}_t\left[y_{t+h}-h\mu\right]
+\end{align*}
+
+\bigskip\begin{description}
+\item[$BN_t$] {\color{mcxs2}is a random walk with the same mean growth rate as the observed series}
+\item[$y_t - BN_t$] {\color{mcxs2}the deviation from trend is a stationary process}
+\end{description}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Forecasting with UC model}
+
+\textbf{One period ahead.}
+\begin{align*}
+\mathbb{E}_t[y_{t+1}] &= \mathbb{E}_t[\tau_{t+1} + \epsilon_{t+1}]\\
+&= \mathbb{E}_t[\mu + \tau_{t} + \eta_{t+1} + \alpha_p(L)^{-1}e_{t+1}]\\
+&= \mu + \tau_{t} + \mathbb{E}_t[\alpha_p(L)^{-1}e_{t+1}]
+\end{align*}
+
+\textbf{Two periods ahead.}
+\begin{align*}
+\mathbb{E}_t[y_{t+2}] &= \mathbb{E}_t[\tau_{t+2} + \epsilon_{t+2}]\\
+&= \mathbb{E}_t[2\mu + \tau_{t} + \eta_{t+2}+ \eta_{t+1} + \alpha_p(L)^{-1}e_{t+2}]\\
+&= 2\mu + \tau_{t} + \mathbb{E}_t[\alpha_p(L)^{-1}e_{t+2}]
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Forecasting with UC model}
+
+\textbf{$h$ periods ahead.}
+\begin{align*}
+\mathbb{E}_t[y_{t+h}] &= \mathbb{E}_t[\tau_{t+h} + \epsilon_{t+h}]\\
+&= \mathbb{E}_t[h\mu + \tau_{t} + \eta_{t+h}+\dots+ \eta_{t+1} + \alpha_p(L)^{-1}e_{t+h}]\\
+&= h\mu + \tau_{t} + \mathbb{E}_t[\alpha_p(L)^{-1}e_{t+h}]\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{UC model and Beveridge-Nelson decomposition}
+
+\begin{align*}
+\lim_{h\rightarrow\infty}\mathbb{E}_t[y_{t+h} - h\mu] &= \tau_{t} 
+\end{align*}
+
+\bigskip\begin{description}
+\item[$\tau_t$] {\color{mcxs2}is interpreted as a trend component in the BN sense} 
+
+\bigskip\item[At the limit] $\lim_{h\rightarrow\infty}\mathbb{E}_t[\alpha_p(L)^{-1}e_{t+h}]=0$ {\color{mcxs2}as the stationarity condition holds and} $h\gg p$
+\end{description}
+
+\end{frame}
+
+{\setbeamercolor{background canvas}{bg=purple}
+\begin{frame}{Unobserved Component models}
+
+\begin{description}
+\item[decompose] {\color{white}the original time series into} 
+	\begin{description}\small
+	\item[unit-root non-stationary trend] {\color{white}that is linked to  the} $BN_t$ {\color{white}component}
+	\item[unit-root stationary deviation from trend] {\color{white}that may exhibit cyclical patterns of persistence (if} $p\geq2${\color{white})}
+	\end{description}
+
+\bigskip\item[belong to a family] {\color{white}of state-space models} 
+
+\bigskip\item[Its ARIMA representation] {\color{white}facilitates the interpretation and understanding of properties} 
+
+\bigskip\item[are applied] {\color{white}in particular to modeling trend inflation and\\ to estimation of output gap} 
+\end{description}
+
+\end{frame}}
+
+
+\end{document} 

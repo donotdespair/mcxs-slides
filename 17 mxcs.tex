@@ -1,0 +1,750 @@
+\documentclass[notes,blackandwhite,mathsans,usenames,dvipsnames]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{fancybox}
+\usepackage{booktabs}
+\usepackage{multirow,pxfonts}
+\usepackage{cmbright}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{animate}
+\usepackage{changepage}
+
+\usepackage[T1]{fontenc}
+\fontencoding{T1}  
+\usepackage[utf8]{inputenc}
+
+
+\usefonttheme{default}
+\setbeamercovered{invisible}
+\beamertemplatenavigationsymbolsempty
+
+\makeatletter
+\setbeamertemplate{footline}
+{
+  \leavevmode
+  \hbox{
+  \begin{beamercolorbox}[wd=0.97\paperwidth,ht=2.25ex,dp=2ex,right]{}
+{\color{mcxs2} \insertframenumber{} / \inserttotalframenumber}
+  \end{beamercolorbox}}%
+}
+
+
+\definecolor{mcxs1}{HTML}{05386B}
+\definecolor{mcxs2}{HTML}{379683}
+\definecolor{mcxs3}{HTML}{5CDB95}
+\definecolor{mcxs4}{HTML}{8EE4AF}
+\definecolor{mcxs5}{HTML}{EDF5E1}
+\setbeamercolor{frametitle}{fg=mcxs2}
+\AtBeginDocument{\color{mcxs1}}
+\setbeamertemplate{itemize item}[triangle]
+
+
+\begin{document}
+%\fontfamily{pag}\selectfont
+%\setbeamerfont{title}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{frametitle}{family=\fontfamily{pag}\selectfont}
+%\setbeamerfont{framesubtitle}{family=\fontfamily{pag}\selectfont}
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\vspace{1cm}
+\begin{tabular}{rl}
+&\textbf{\LARGE\color{lightgray}\color{mcxs2} Macroeconometrics}\\[8ex]
+\textbf{\Large Lecture 17}&\textbf{\Large\color{mcxs2}Bayesian estimation using}\\
+&\textbf{\Large\color{mcxs2}simulation smoother}\\[18ex]
+&\textbf{Tomasz Wo\'zniak}\\[1ex]
+&{\small\color{mcxs2} Department of Economics}\\
+&{\small\color{mcxs2}University of Melbourne}
+\end{tabular}
+
+\end{frame}
+}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\vspace{1cm}\textbf{\color{mcxs2}A simple Unobserved Component model}
+
+%\bigskip\textbf{\color{mcxs2}Likelihood function}
+
+\bigskip\textbf{\color{mcxs2}Prior distributions}
+
+\bigskip\textbf{\color{purple}Derivation of Gibbs sampler}
+
+\bigskip\textbf{\color{mcxs2}Simulation smoother}
+
+
+\vspace{1cm} Compulsory readings: \footnotesize
+
+
+\smallskip{\color{mcxs2} Wo\'zniak (2021) Bayesian estimation of simple Unobserved Component models using simulation smoother}
+
+\bigskip\normalsize Useful readings: \footnotesize
+
+\smallskip{\color{mcxs2}Wo\'zniak (2021) \href{https://gallery.rcpp.org/articles/simulation-smoother-using-rcpparmadillo/}{Simulation Smoother using RcppArmadillo}, Rcpp Gallery}
+
+\end{frame}
+}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\bigskip\textbf{\color{mcxs1}Objectives.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs1}To present Bayesian estimation of state-space models}
+\item {\color{mcxs1}To set the model specification through a prior distribution}
+\item {\color{mcxs1}To derive a Gibbs sampler for Unobserved Component models}
+\end{itemize}
+
+\bigskip\textbf{\color{mcxs2}Learning outcomes.}
+\begin{itemize}[label=$\blacktriangleright$]
+\item {\color{mcxs2}Deriving full conditional posterior distributions}
+\item {\color{mcxs2}Implementing a simulation smoother}
+\item {\color{mcxs2}Programming a sampler from multivariate normal distribution with special type of the mean and covariance}
+\end{itemize}
+
+\end{frame}
+}
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}A simple} {\color{mcxs1}Unobserved Component model}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\begin{align}
+y_t &= \tau_t + \epsilon_t\\[1ex]
+\tau_t &= \mu + \tau_{t-1} + \eta_t\\[1ex]
+\epsilon_t &= \alpha_1\epsilon_{t-1} + \dots + \alpha_p\epsilon_{t-p} +  e_t
+\end{align}
+
+\begin{align*}
+\begin{bmatrix}\eta_t \\ e_t\end{bmatrix}\bigg|Y_{t-1} &\sim ii\mathcal{N}\left(\mathbf{0}_2, \begin{bmatrix}\sigma_\eta^2 & 0 \\ 0 & \sigma_e^2\end{bmatrix} \right)\\[1ex]
+\alpha_p(L) &= 1-\alpha_1L - \dots - \alpha_pL^p\\[1ex]
+\alpha_p(z)&=0\text{ : }\quad  |z|>1\quad\forall z\in\mathbb{C}\\[1ex]
+\sigma_{\eta e}&= \mathbb{C}ov[\eta_t,e_t]=0\\[1ex]
+\tau_0 &\text{ -- an estimated parameter}\\[1ex]
+\mathbf{0}_p &= (\epsilon_{0}, \epsilon_{-1}, \dots, \epsilon_{-p+1})'
+\end{align*}
+
+\end{frame}
+
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+
+\smallskip\textbf{Define $T\times1$ matrices.}\scriptsize
+\begin{align*}
+y=\begin{bmatrix}y_1\\ \vdots \\ y_T\end{bmatrix}\quad
+\tau=\begin{bmatrix}\tau_1\\ \vdots \\ \tau_T\end{bmatrix}\quad
+\epsilon=\epsilon_{[1:T]}=\begin{bmatrix}\epsilon_1\\ \vdots \\ \epsilon_T\end{bmatrix}\quad
+\eta=\begin{bmatrix}\eta_1\\ \vdots \\ \eta_T\end{bmatrix}\quad
+e=\begin{bmatrix}e_1\\ \vdots \\ e_T\end{bmatrix}\quad
+\imath_T &=\begin{bmatrix}1\\ \vdots \\ 1\end{bmatrix}\quad
+e_{1.T}=\begin{bmatrix}1 \\ 0 \\ \vdots \\ 0\end{bmatrix}
+\end{align*}
+
+\normalsize\smallskip\textbf{Define matrices.}\scriptsize
+\begin{align*}
+\underset{\color{mcxs2}(2\times1)}{\beta}&=\begin{bmatrix} \mu&\tau_0\end{bmatrix}'\quad 
+&\underset{\color{mcxs2}(T\times2)}{X_\tau}&=\begin{bmatrix} \imath_T&e_{1.T}\end{bmatrix}\\
+\underset{\color{mcxs2}(p\times1)}{\alpha}&=\begin{bmatrix} \alpha_1&\dots&\alpha_p\end{bmatrix}'\quad
+&\underset{\color{mcxs2}(T\times p)}{X_\epsilon}&=\begin{bmatrix} \epsilon_{[0:(T-1)]}& \epsilon_{[-1:(T-2)]}&\dots&\epsilon_{[(-p+1):(T-p)]}\end{bmatrix}\quad
+\end{align*}
+
+
+\normalsize\smallskip\textbf{Define $T\times T$ matrices.}\scriptsize
+$$
+H=\begin{bmatrix}
+1&0&0&\dots&0&0\\
+-1&1&0&\dots&0&0\\
+0&-1&1&\dots&0&0\\
+\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\
+0&0&0&\dots&1&0\\
+0&0&0&\dots&-1&1
+\end{bmatrix}\quad
+H_\alpha=\begin{bmatrix}
+1&0&0&\dots&0&0\\
+-\alpha_1&1&0&\dots&0&0\\
+-\alpha_2&-\alpha_1&1&\dots&0&0\\
+\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\
+-\alpha_p&-\alpha_{p-1}&-\alpha_{p-2}&\dots&0&0\\
+\vdots&\vdots&\vdots&\ddots&\vdots&\vdots\\
+0&0&0&\dots&1&0\\
+0&0&0&\dots&-\alpha_1&1\\
+\end{bmatrix}
+$$
+
+\end{frame}
+
+
+
+\begin{frame}{A simple Unobserved Component model}
+\setcounter{equation}{0}
+\begin{align}
+y &= \tau + \epsilon\\[2ex]
+H\tau &= \mu \imath_T + \tau_0 e_{1.T} + \eta \qquad \\ \setcounter{equation}{1}
+H\tau &=  X_\tau \beta + \eta\\ \setcounter{equation}{1}
+\tau&= H^{-1} X_\tau \beta + H^{-1}\eta\\[2ex] 
+H_\alpha \epsilon &=  e\\ \setcounter{equation}{2}
+\epsilon &=  H_\alpha^{-1}e \\ \setcounter{equation}{2}
+&= X_\epsilon \alpha + e 
+\end{align}
+\begin{align*}
+\eta &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_\eta I_T\right)\qquad\\
+e &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_e I_T\right)\\
+\end{align*}
+
+\textbf{To be estimated:} $\tau, \epsilon, \beta=(\mu,\tau_0), \alpha, \sigma=(\sigma^2_\eta, \sigma^2_e)$
+\end{frame}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Prior} {\color{mcxs1}distributions}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+\begin{frame}{Prior distributions}
+
+\textbf{Prior distribution} of $\tau$ is specified by equation (2)
+\begin{align*}
+\tau&= H^{-1} X_\tau \beta + H^{-1}\eta\\ 
+\eta &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_\eta I_T\right)\\
+H^{-1}\eta &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_\eta (H'H)^{-1}\right)\\
+\downarrow&\\
+\tau|\beta,\sigma^2_\eta &\sim\mathcal{N}_T\left(H^{-1} X_\tau \beta, \sigma^2_\eta (H'H)^{-1}\right)\\
+&\propto \exp\left\{-\frac{1}{2}\frac{1}{\sigma^2_\eta} \left(\tau-H^{-1} X_\tau \beta\right)'H'H\left(\tau-H^{-1} X_\tau \beta\right) \right\}
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Prior distributions}
+
+\textbf{Prior distribution} of $\epsilon$ is specified by equation (3)
+\begin{align*}
+\epsilon &=  H_\alpha^{-1}e\\
+e &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_e I_T\right)\\
+H_\alpha^{-1}e &\sim \mathcal{N}\left(\mathbf{0}_T, \sigma^2_e (H_{\alpha}'H_{\alpha})^{-1}\right)\\
+\downarrow&\\
+\epsilon|\alpha,\sigma^2_e &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_e (H_{\alpha}'H_{\alpha})^{-1}\right)\\
+&\propto \exp\left\{-\frac{1}{2}\frac{1}{\sigma^2_e} \epsilon'H_{\alpha}'H_{\alpha}\epsilon \right\}
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Prior distributions}
+
+\bigskip
+\textbf{Prior distributions} of $\alpha, \beta, \sigma^2_\eta, \sigma^2_e$ are assumed to be
+\begin{align*}
+\alpha&\sim\mathcal{N}_p\left(\underline{\alpha},\underline{V}_{\alpha}\right)\mathcal{I}(\alpha\in A)&\propto& \exp\left\{ -\frac{1}{2}(\alpha-\underline{\alpha})'\underline{V}_\alpha^{-1}(\alpha-\underline{\alpha}) \right\}\mathcal{I}(\alpha\in A) \\[2ex]
+\beta&\sim\mathcal{N}_2\left(\underline{\beta},\underline{V}_{\beta}\right)&\propto& \exp\left\{ -\frac{1}{2}(\beta-\underline{\beta})'\underline{V}_\beta^{-1}(\beta-\underline{\beta}) \right\}\\[2ex]
+\sigma^2_\eta&\sim\mathcal{IG}2\left(\underline{s},\underline{\nu}\right)&\propto&\left(\sigma^2_\eta\right)^{-\frac{\underline{\nu}+2}{2}} \exp\left\{ -\frac{1}{2}\frac{\underline{s}}{\sigma^2_\eta} \right\}\\[2ex]
+\sigma^2_e&\sim\mathcal{IG}2\left(\underline{s},\underline{\nu}\right) &\propto&\left(\sigma^2_e\right)^{-\frac{\underline{\nu}+2}{2}} \exp\left\{ -\frac{1}{2}\frac{\underline{s}}{\sigma^2_e} \right\}
+\end{align*}
+
+$\alpha\in A$ {\color{mcxs2} -- set of parameters } $\alpha$ {\color{mcxs2} for which stationarity holds and} 
+$$ \mathcal{I}(\alpha\in A)=\left\{ \begin{array}{ll} 1 &\text{if }\alpha\in A \\ 0 &\text{otherwise} \end{array}\right. $$
+
+\end{frame}
+
+
+
+\begin{frame}{Prior distributions}
+
+\begin{align*}
+p(\tau,\epsilon,\alpha,\beta,\sigma) &= p\left(\tau|\beta,\sigma^2_\eta\right)p(\beta)p\left(\sigma^2_\eta\right)
+p\left(\epsilon|\alpha,\sigma^2_e\right)p(\alpha)p\left(\sigma^2_e\right)\\[3ex]
+\tau|\beta,\sigma^2_\eta &\sim\mathcal{N}\left(H^{-1} X_\tau \beta, \sigma^2_\eta (H'H)^{-1}\right)\\
+\beta&\sim\mathcal{N}_2\left(\underline{\beta},\underline{V}_{\beta}\right)\\
+\sigma^2_\eta&\sim\mathcal{IG}2\left(\underline{s},\underline{\nu}\right)\\[1ex]
+\epsilon|\alpha,\sigma^2_e &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_e (H_{\alpha}'H_{\alpha})^{-1}\right)\\
+\alpha&\sim\mathcal{N}_p\left(\underline{\alpha},\underline{V}_{\alpha}\right)\mathcal{I}(\alpha\in A)\\
+\sigma^2_e&\sim\mathcal{IG}2\left(\underline{s},\underline{\nu}\right)
+\end{align*}
+
+\end{frame}
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Derivation of} {\color{mcxs1}Gibbs sampler}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+\begin{frame}{Gibbs sampler}
+
+{\color{mcxs2}is an iterative algorithm at each iteration of which draws are sampled from the following} {\color{purple}full-conditional posterior distributions}
+\begin{align*}
+\tau&\sim p\left( \tau|y,\alpha,\beta,\sigma \right)\\
+\epsilon&\sim p\left( \epsilon|y,\alpha,\beta,\sigma \right)\\
+\beta&\sim p\left( \beta|y,\tau,\sigma^2_\eta \right)\\
+\alpha&\sim p\left( \alpha|y,\epsilon,\sigma^2_e \right)\\
+\sigma^2_\eta&\sim p\left( \sigma^2_\eta|y,\tau,\beta \right)\\
+\sigma^2_e&\sim p\left( \sigma^2_e|y,\epsilon,\alpha \right)
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Full-conditional posterior distribution of $\tau|y,\alpha,\beta,\sigma$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (1)
+\begin{align*}
+\tau &= y-\epsilon\\
+\epsilon &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_e (H_{\alpha}'H_{\alpha})^{-1}\right)\\
+L\left(\tau|y,\alpha,\sigma^2_e\right)&\propto\exp\left\{-\frac{1}{2}\sigma^{-2}_e(\tau-y)'H_\alpha'H_\alpha(\tau-y)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} {\color{mcxs2}is given by}
+\begin{align*}
+p\left(\tau|\beta,\sigma^2_\eta\right) &\propto \exp\left\{-\frac{1}{2}\frac{1}{\sigma^2_\eta} \left(\tau-H^{-1} X_\tau \beta\right)'H'H\left(\tau-H^{-1} X_\tau \beta\right) \right\}
+\end{align*}
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \tau|y,\alpha,\beta,\sigma \right)&\propto L\left(\tau|y,\alpha,\sigma^2_e\right)p\left(\tau|\beta,\sigma^2_\eta\right)\\
+&= \mathcal{N}_T\left(\overline{\tau},\overline{V}_\tau\right)\\
+\overline{V}_\tau &= \left[\sigma^{-2} _eH'_\alpha H_\alpha + \sigma^{-2} _\eta H' H \right]^{-1}\\
+\overline{\tau} &= \overline{V}_\tau\left[\sigma^{-2} _eH'_\alpha H_\alpha y + \sigma^{-2} _\eta H' X_\tau \beta \right]
+\end{align*}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Full-conditional posterior distribution of $\epsilon|y,\alpha,\beta,\sigma$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (1)
+\begin{align*}
+\epsilon &=y -\tau\\
+y-\tau  &\sim\mathcal{N}\left(y-H^{-1} X_\tau \beta, \sigma^2_\eta (H'H)^{-1}\right)\\
+L\left(\epsilon|y,\beta,\sigma^2_\eta\right)&\propto\exp\left\{-\frac{1}{2}\sigma^{-2}_\eta\left(\epsilon-(y-H^{-1}X_\tau \beta)\right)'H'H\left(\epsilon-(y-H^{-1}X_\tau \beta)\right)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} {\color{mcxs2}is given by}
+\begin{align*}
+p\left(\epsilon|\alpha,\sigma^2_e\right) &\propto \exp\left\{-\frac{1}{2}\frac{1}{\sigma^2_e} \epsilon'H_{\alpha}'H_{\alpha}\epsilon \right\}
+\end{align*}
+
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \epsilon|y,\alpha,\beta,\sigma \right)&\propto L\left(\epsilon|y,\beta,\sigma^2_\eta\right)p\left(\epsilon|\alpha,\sigma^2_e\right)\\
+&= \mathcal{N}_T\left(\overline{\epsilon},\overline{V}_\epsilon\right)\\
+\overline{V}_\epsilon &= \left[\sigma^{-2} _eH'_\alpha H_\alpha + \sigma^{-2} _\eta H' H \right]^{-1}\\
+\overline{\epsilon} &= \overline{V}_\epsilon \sigma^{-2} _\eta H'H\left(y- H^{-1}X_\tau \beta \right)
+\end{align*}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Full-conditional posterior distribution of $\beta|y,\tau,\sigma^2_\eta$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (2)
+\begin{align*}
+H\tau-X_\tau \beta&=\eta\\
+\eta  &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_\eta I_T\right)\\
+L\left(\beta|y,\tau,\sigma^2_\eta\right)&\propto\exp\left\{-\frac{1}{2}\sigma^{-2}_\eta\left(X_\tau \beta - H\tau\right)'\left(X_\tau \beta - H\tau\right)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} {\color{mcxs2}is given by}
+\begin{align*}
+p(\beta)&\propto \exp\left\{ -\frac{1}{2}(\beta-\underline{\beta})'\underline{V}_\beta^{-1}(\beta-\underline{\beta}) \right\}
+\end{align*}
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \beta|y,\tau,\sigma^2_\eta \right) &\propto L\left(\beta|y,\tau,\sigma^2_\eta\right)p(\beta)\\
+&= \mathcal{N}_2\left(\overline{\beta},\overline{V}_\beta\right)\\
+\overline{V}_\beta &= \left[\sigma^{-2} _\eta X_\tau' X_\tau + \underline{V}_\beta^{-1} \right]^{-1}\\
+\overline{\beta} &= \overline{V}_\beta \left[\sigma^{-2} _\eta X_\tau' H \tau + \underline{V}_\beta^{-1}\underline{\beta}  \right]
+\end{align*}
+\end{frame}
+
+
+
+
+
+\begin{frame}{Full-conditional posterior distribution of $\alpha|y,\epsilon,\sigma^2_e$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (3)
+\begin{align*}
+\epsilon-X_\epsilon \alpha &=e\\
+e  &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_e I_T\right)\\
+L\left(\alpha|y,\epsilon,\sigma^2_e\right)&\propto\exp\left\{-\frac{1}{2}\sigma^{-2}_e\left(X_\epsilon \alpha-\epsilon\right)'\left(X_\epsilon \alpha-\epsilon\right)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} {\color{mcxs2}is given by}
+\begin{align*}
+p(\alpha)&\propto \exp\left\{ -\frac{1}{2}(\alpha-\underline{\alpha})'\underline{V}_\alpha^{-1}(\alpha-\underline{\alpha}) \right\}\mathcal{I}(\alpha\in A)
+\end{align*}
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \alpha|y,\epsilon,\sigma^2_e \right) &\propto L\left(\alpha|y,\epsilon,\sigma^2_e\right)p(\alpha)\mathcal{I}(\alpha\in A)\\
+&= \mathcal{N}_p\left(\overline{\alpha},\overline{V}_\alpha\right)\mathcal{I}(\alpha\in A)\\
+\overline{V}_\alpha &= \left[\sigma^{-2} _e X_\epsilon' X_\epsilon + \underline{V}_\alpha^{-1} \right]^{-1}\\
+\overline{\alpha} &= \overline{V}_\alpha \left[\sigma^{-2} _e X_\epsilon' \epsilon + \underline{V}_\alpha^{-1}\underline{\alpha}  \right]
+\end{align*}
+
+\end{frame}
+
+
+
+\begin{frame}{Full-conditional posterior distribution of $\sigma^2_\eta|y,\tau,\beta$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (2)
+\begin{align*}
+H\tau-X_\tau \beta&=\eta\\
+\eta  &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_\eta I_T\right)\\
+L\left(\sigma^2_\eta|y,\tau,\beta\right)&\propto\left(\sigma^2_\eta\right)^{-\frac{T}{2}}\exp\left\{-\frac{1}{2}\sigma^{-2}_\eta\left(X_\tau \beta - H\tau\right)'\left(X_\tau \beta - H\tau\right)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} {\color{mcxs2}is given by}
+\begin{align*}
+p\left(\sigma^2_\eta\right)&\propto\left(\sigma^2_\eta\right)^{-\frac{\underline{\nu}+2}{2}} \exp\left\{ -\frac{1}{2}\frac{\underline{s}}{\sigma^2_\eta} \right\}
+\end{align*}
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \sigma^2_\eta|y,\tau,\beta \right) &\propto L\left(\sigma^2_\eta|y,\tau,\beta\right)p\left(\sigma^2_\eta\right)\\
+&= \mathcal{IG}2\left(\overline{s}_\eta,\overline{\nu}_\eta\right)\\
+\overline{s}_\eta &= \underline{s} + (H\tau-X_\tau \beta)'(H\tau-X_\tau \beta)\\
+\overline{\nu}_\eta &= \underline{\nu} + T
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Full-conditional posterior distribution of $\sigma^2_e|y,\epsilon,\alpha$}
+
+\small
+\bigskip\textbf{Conditional likelihood} {\color{mcxs2}is based on equation} (3)
+\begin{align*}
+\epsilon-X_\epsilon \alpha &=e\\
+e  &\sim\mathcal{N}\left(\mathbf{0}_T, \sigma^2_e I_T\right)\\
+L\left(\sigma^2_e|y,\epsilon,\alpha\right)&\propto \left(\sigma^2_e\right)^{-\frac{T}{2}}\exp\left\{-\frac{1}{2}\sigma^{-2}_e\left(X_\epsilon \alpha-\epsilon\right)'\left(X_\epsilon \alpha-\epsilon\right)  \right\}
+\end{align*}
+
+\smallskip\textbf{Prior distribution} is given by
+\begin{align*}
+p\left(\sigma^2_e\right)&\propto\left(\sigma^2_e\right)^{-\frac{\underline{\nu}+2}{2}} \exp\left\{ -\frac{1}{2}\frac{\underline{s}}{\sigma^2_\eta} \right\}
+\end{align*}
+
+\smallskip\textbf{Full-conditional posterior distribution.}
+\begin{align*}
+p\left( \sigma^2_e|y,\epsilon,\alpha \right) &\propto L\left(\sigma^2_e|y,\epsilon,\alpha\right)p\left(\sigma^2_e\right)\\
+&= \mathcal{IG}2\left(\overline{s}_e,\overline{\nu}_e\right)\\
+\overline{s}_e &= \underline{s} + (\epsilon-X_\epsilon \alpha)'(\epsilon-X_\epsilon \alpha)\\
+\overline{\nu}_e &= \underline{\nu} + T
+\end{align*}
+
+\end{frame}
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}
+
+\begin{adjustwidth}{-0.5cm}{0cm}
+\vspace{8.3cm}\Large
+\textbf{{\color{mcxs2}Simulation} {\color{mcxs1}smoother}}
+\end{adjustwidth}
+
+\end{frame}
+}
+
+
+
+
+
+
+\begin{frame}{Simulation smoother}
+
+{\color{mcxs2}Sampling from a multivariate normal distribution using a precision matrix}
+\begin{equation*}
+\mathcal{N}\left( D^{-1}b, D^{-1} \right)
+\end{equation*}
+
+\begin{description}
+\item[$D^{-1}$] {\color{mcxs2}-- an} $N\times N$ {\color{mcxs2}covariance matrix}
+\item[$D$] {\color{mcxs2}-- an} $N\times N$ {\color{mcxs2}precision matrix that is a tridiagonal}
+
+\bigskip\item[$O\left(N^3\right)$] {\color{mcxs2}operations needed to invert} $D$ {\color{mcxs2}with usual computing routines}
+\item[$O\left(N\right)$] {\color{mcxs2}operations are required to invert} $D$ {\color{mcxs2}using dedicated routines for special types of matrices}
+\end{description}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}{Simulation smoother}
+
+\begin{equation*}
+\mathcal{N}\left( D^{-1}b, D^{-1} \right)
+\end{equation*}
+
+\bigskip {\color{mcxs2}Let} $L=chol(D)$ {\color{mcxs2}be a lower-triangular matrix such that }$D=LL'$
+
+\bigskip {\color{mcxs2}Suppose that} $L^{-1}$ {\color{mcxs2}can be computed efficiently}
+
+\bigskip {\color{mcxs2}Compute the mean of the distribution by:}
+$$ L^{-1\prime}L^{-1}b = (LL')^{-1}b = D^{-1}b $$
+
+{\color{mcxs2}Let} $x$ {\color{mcxs2}denote an} $N\times1$ {\color{mcxs2}vector with elements drawn independently from a standard normal distribution}
+
+\bigskip {\color{mcxs2}Sample a draw from the target  normal distribution}
+$$ L^{-1\prime}\left(L^{-1}b + x\right) $$
+
+{\color{mcxs2}The method in the next slide further simplifies the algorithm and bypasses inverting} $L$ 
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Simulation smoother}
+
+{\color{mcxs2}Let} $L\setminus b$ {\color{mcxs2}denote the unique solution to the triangular system} $Lx=b$ {\color{mcxs2}obtained by forward (backward) substitution, that is,} $L\setminus b=L^{-1}b$. 
+
+\bigskip\textbf{Simulation smoother.}
+\begin{description}
+\item[Compute]  $L=chol(D)$ {\color{mcxs2}such that} $D=LL'$
+\item[Sample] $x\sim \mathcal{N}\left(0_{N\times 1},I_{N}\right)$
+\item[Compute] {\color{mcxs2}a draw from the distribution via the affine transformation:} 
+$$ L'\setminus (L\setminus b + x) $$
+\end{description}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Simulation smoother in R for tridiagonal $D$ matrix}
+
+\begin{verbatim}
+library(mgcv)
+
+N             = dim(D)[1]
+lead.diag     = diag(D)
+sub.diag      = sdiag(D, -1)
+  
+D.chol        = trichol(ld = lead.diag, sd=sub.diag)
+D.L           = diag(D.chol$ld)
+sdiag(D.L,-1) = D.chol$sd
+  
+x             = matrix(rnorm(n*N), ncol=n)
+a             = forwardsolve(D.L, b)
+draw          = backsolve(t(D.L), a + x)
+\end{verbatim}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Simulation smoother in R {\color{purple}comparison}}
+
+\begin{verbatim}
+rmvnorm.tridiag.precision = function(n, D, b){
+  N           = dim(D)[1]
+  lead.diag   = diag(D)
+  sub.diag    = sdiag(D, -1)
+  
+  D.chol      = trichol(ld = lead.diag, sd=sub.diag)
+  D.L         = diag(D.chol$ld)
+  sdiag(D.L,-1) = D.chol$sd
+  
+  x           = matrix(rnorm(n*N), ncol=n)
+  a           = forwardsolve(D.L, b)
+  draw        = backsolve(t(D.L), 
+                    matrix(rep(a,n), ncol=n) + x)
+  
+  return(draw)
+}
+\end{verbatim}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Simulation smoother in R {\color{purple}comparison}}
+
+\begin{verbatim}
+rmvnorm.usual = function(n, D, b){
+  N           = dim(D)[1]
+  D.chol      = t(chol(D))
+  variance.chol = solve(D.chol)
+  
+  x           = matrix(rnorm(n*N), ncol=n)
+  draw        = t(variance.chol) %*% 
+           (matrix(rep(variance.chol%*%b,n), ncol=n) + x)
+  
+  return(draw)
+}
+\end{verbatim}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Simulation smoother in R {\color{purple}comparison}}
+
+\footnotesize
+\begin{verbatim}
+library(mgcv); library(microbenchmark)
+
+set.seed(12345)
+T     = 240
+md    = rgamma(T, shape=10, scale=10)
+od    = rgamma(T-1, shape=10, scale=1)
+D     = 2*diag(md)
+sdiag(D, 1)  = -od
+sdiag(D, -1) = -od
+b     = as.matrix(rnorm(T))
+
+microbenchmark(
+  trid  = rmvnorm.tridiag.precision(n=100, D=D, b=b),
+  usual = rmvnorm.nothing.special(n=100, D=D, b=b),
+  check = "equal", setup=set.seed(123456)
+)
+
+Unit: milliseconds
+ expr       min        lq      mean    median        uq       max neval
+ trid  3.489267  4.539225  6.655018  4.666931  4.963046 154.70131   100
+usual 13.769023 15.355094 16.746697 15.694483 17.626655  28.79406   100
+\end{verbatim}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}[fragile]{Simulation smoother in R {\color{purple}comparison}}
+
+\footnotesize
+\begin{verbatim}
+set.seed(12345)
+T     = 720
+md    = rgamma(T, shape=10, scale=10)
+od    = rgamma(T-1, shape=10, scale=1)
+D     = 2*diag(md)
+sdiag(D, 1) = -od
+sdiag(D, -1) = -od
+b     = as.matrix(rnorm(T))
+
+microbenchmark(
+  trid  = rmvnorm.tridiag.precision(n=100, D=D, b=b),
+  usual = rmvnorm.nothing.special(n=100, D=D, b=b),
+  check = "equal", setup=set.seed(123456)
+)
+
+Unit: milliseconds
+ expr       min        lq      mean    median        uq      max neval
+ trid  22.46832  26.55893  45.00241  29.93325  35.21184 164.7311   100
+usual 249.23538 263.19570 286.56741 270.97134 289.85116 583.5321   100
+\end{verbatim}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+{\setbeamercolor{background canvas}{bg=mcxs4}
+\begin{frame}{Bayesian estimation of Unobserved Component models}
+
+\begin{description}
+\item[proceeds] {\color{mcxs2}via Gibbs sampling with well-specified full conditional posterior distributions} 
+
+\bigskip\item[bypasses] {\color{mcxs2}the application of Kalman filter that requires sequential computer calculations} 
+
+\bigskip\item[uses] {\color{mcxs2}the simulation smoother instead in order to sample draws of latent processes} 
+
+\bigskip\item[applies] {\color{mcxs2}dedicated algorithms for special types of matrices for fast computations} 
+
+\end{description}
+
+\end{frame}}
+
+
+\end{document} 
