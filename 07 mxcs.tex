@@ -241,11 +241,11 @@ A\left(L\right)y_t &= \mu_0 + \epsilon_t
 \end{align*}
 
 \bigskip\textbf{Stationarity condition for the VAR($p$) process.}
-$$ \det\left(A\left(z\right)\right) = 0 \qquad|z|> 1 \quad\forall z\in\mathbb{C} $$
+$$ \det\left(A\left(z\right)\right) = 0  \qquad \text{iff }|z|> 1 \quad\forall z\in\mathbb{C} $$
 
 {\color{mcxs2}The} VAR($p$) {\color{mcxs2}process is {\color{mcxs1}stationary} if the roots of the characteristic polynomial are outside of the complex unit circle.}
 
-\bigskip$\det(X)$ {\color{mcxs2}is a determinant of matrix} $X$.
+\bigskip$\det(X)$ {\color{mcxs2}is the determinant of matrix} $X$.
 
 \end{frame}
 
@@ -283,9 +283,8 @@ $$ J\mathbf{A} Y_{t-1} = A_1 y_{t-1} + \dots + A_p y_{t-p} $$
 \begin{frame}{Vector autoregressions: unconditional moments}
 
 \textbf{Stationarity condition.}
-$$ \det(I_{Np} - \mathbf{A}z) = 0 \qquad\text{for } |z|>1 \quad\forall z\in\mathbb{C} $$
 
-\smallskip {\color{mcxs2}Assume stationarity}
+$$ \det(I_{Np} - \mathbf{A}z) = 0 \qquad\text{for } |z|>1 \quad\forall z\in\mathbb{C} $$
 
 \bigskip\textbf{Unconditional mean.}
 \begin{align*}
@@ -368,7 +367,7 @@ $$ \Gamma_s = \mathbf{A}\Gamma_{s-1} + \mathbb{E}\left[E_t\left(Y_{t-s} - \mathb
 \textbf{Useful matrix transformations.}\\
 $(AB)' = B'A' $\\
 $\text{vec}(ABC) = (C'\otimes A)\text{vec}(B)$\\
-$\text{vec}\underset{\color{mcxs2}(m\times n)}{(X)}$ {\color{mcxs2}-- is an} $mn\times1$ {\color{mcxs2}vector stacking columns of} $X$ {\color{mcxs2}one by one}\\
+$\text{vec}(X)$ {\color{mcxs2}-- is an} $mn\times1$ {\color{mcxs2}vector stacking columns of} $\underset{\color{mcxs2}(m\times n)}{X}$ {\color{mcxs2}one by one}\\
 $\otimes$ {\color{mcxs2}-- is a Kronecker product}
 
 \end{frame}
@@ -429,7 +428,7 @@ y_t = JY_t &= J\mathbf{M} + \sum_{i=0}^{\infty}J\mathbf{A}^iE_{t-i} \\
 \begin{frame}{Granger causality}
 
 {\color{mcxs2}Partition an $N\times 1$ vector} $y_t$ {\color{mcxs2}into sub-vectors} $y_{1.t}$, $y_{2.t}$ {\color{mcxs2}and} $y_{3.t}${\color{mcxs2}, of dimensions} $N_1$, $N_2, N_3$ {\color{mcxs2}respectively, and} $N_1 + N_2 + N_3 = N$
-$$ y_t = \begin{bmatrix} y_{1t} \\ y_{2t} \\ y_{3t} \end{bmatrix} $$
+$$ y_t = \begin{bmatrix} y_{1.t} \\ y_{2.t} \\ y_{3.t} \end{bmatrix} $$
 
 \small
 \textbf{Notation. }
@@ -485,7 +484,7 @@ $$ \begin{bmatrix} A_{11}(L) & A_{12}(L) & A_{13}(L) \\ A_{21}(L) & A_{22}(L) & 
 
 \small
 \textbf{Granger causality.}\\
-{\color{mcxs2}The process} $y_{1t}$ {\color{mcxs2}does} {\color{mcxs1}not Granger cause} $y_{2t}$ {\color{mcxs2} iff:}
+{\color{mcxs2}The process} $y_{1.t}$ {\color{mcxs2}does} {\color{mcxs1}not Granger cause} $y_{2.t}$ {\color{mcxs2} iff:}
 $$ A_{21}(z) = 0 \qquad \forall z\in \mathbb{C} $$
 {\color{mcxs2}which results in the restrictions on the parameters:}
 $$ A_{21.1} = \dots = A_{21.p} = 0 $$
