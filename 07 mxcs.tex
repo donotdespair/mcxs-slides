@@ -284,7 +284,7 @@ $$ J\mathbf{A} Y_{t-1} = A_1 y_{t-1} + \dots + A_p y_{t-p} $$
 
 \textbf{Stationarity condition.}
 
-\smallskip {\color{mcxs2}Assume stationarity}
+$$ \det(I_{Np} - \mathbf{A}z) = 0 \qquad\text{for } |z|>1 \quad\forall z\in\mathbb{C} $$
 
 \bigskip\textbf{Unconditional mean.}
 \begin{align*}
@@ -367,7 +367,7 @@ $$ \Gamma_s = \mathbf{A}\Gamma_{s-1} + \mathbb{E}\left[E_t\left(Y_{t-s} - \mathb
 \textbf{Useful matrix transformations.}\\
 $(AB)' = B'A' $\\
 $\text{vec}(ABC) = (C'\otimes A)\text{vec}(B)$\\
-$\text{vec}{(X)}_{\color{mcxs2}(m\times n)}$ {\color{mcxs2}-- is an} $mn\times1$ {\color{mcxs2}vector stacking columns of} $X$ {\color{mcxs2}one by one}\\
+$\text{vec}(X)$ {\color{mcxs2}-- is an} $mn\times1$ {\color{mcxs2}vector stacking columns of} $\underset{\color{mcxs2}(m\times n)}{X}$ {\color{mcxs2}one by one}\\
 $\otimes$ {\color{mcxs2}-- is a Kronecker product}
 
 \end{frame}
