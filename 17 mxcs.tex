@@ -325,8 +325,8 @@ p\left(\epsilon|\alpha,\sigma^2_e\right)p(\alpha)p\left(\sigma^2_e\right)\\[3ex]
 
 {\color{mcxs2}is an iterative algorithm at each iteration of which draws are sampled from the following} {\color{purple}full-conditional posterior distributions}
 \begin{align*}
-\tau&\sim p\left( \tau|y,\alpha,\beta,\sigma \right)\\
-\epsilon&\sim p\left( \epsilon|y,\alpha,\beta,\sigma \right)\\
+\tau&\sim p\left( \tau|y,\alpha,\beta,\sigma^2 \right)\\
+\epsilon&\sim p\left( \epsilon|y,\alpha,\beta,\sigma^2 \right)\\
 \beta&\sim p\left( \beta|y,\tau,\sigma^2_\eta \right)\\
 \alpha&\sim p\left( \alpha|y,\epsilon,\sigma^2_e \right)\\
 \sigma^2_\eta&\sim p\left( \sigma^2_\eta|y,\tau,\beta \right)\\
@@ -354,7 +354,7 @@ p\left(\tau|\beta,\sigma^2_\eta\right) &\propto \exp\left\{-\frac{1}{2}\frac{1}{
 
 \smallskip\textbf{Full-conditional posterior distribution.}
 \begin{align*}
-p\left( \tau|y,\alpha,\beta,\sigma \right)&\propto L\left(\tau|y,\alpha,\sigma^2_e\right)p\left(\tau|\beta,\sigma^2_\eta\right)\\
+p\left( \tau|y,\alpha,\beta,\sigma^2 \right)&\propto L\left(\tau|y,\alpha,\sigma^2_e\right)p\left(\tau|\beta,\sigma^2_\eta\right)\\
 &= \mathcal{N}_T\left(\overline{\tau},\overline{V}_\tau\right)\\
 \overline{V}_\tau &= \left[\sigma^{-2} _eH'_\alpha H_\alpha + \sigma^{-2} _\eta H' H \right]^{-1}\\
 \overline{\tau} &= \overline{V}_\tau\left[\sigma^{-2} _eH'_\alpha H_\alpha y + \sigma^{-2} _\eta H' X_\tau \beta \right]
@@ -383,7 +383,7 @@ p\left(\epsilon|\alpha,\sigma^2_e\right) &\propto \exp\left\{-\frac{1}{2}\frac{1
 
 \smallskip\textbf{Full-conditional posterior distribution.}
 \begin{align*}
-p\left( \epsilon|y,\alpha,\beta,\sigma \right)&\propto L\left(\epsilon|y,\beta,\sigma^2_\eta\right)p\left(\epsilon|\alpha,\sigma^2_e\right)\\
+p\left( \epsilon|y,\alpha,\beta,\sigma^2 \right)&\propto L\left(\epsilon|y,\beta,\sigma^2_\eta\right)p\left(\epsilon|\alpha,\sigma^2_e\right)\\
 &= \mathcal{N}_T\left(\overline{\epsilon},\overline{V}_\epsilon\right)\\
 \overline{V}_\epsilon &= \left[\sigma^{-2} _eH'_\alpha H_\alpha + \sigma^{-2} _\eta H' H \right]^{-1}\\
 \overline{\epsilon} &= \overline{V}_\epsilon \sigma^{-2} _\eta H'H\left(y- H^{-1}X_\tau \beta \right)
