@@ -155,7 +155,7 @@ $$ B_0y_t = b_0 + B_1y_{t-1}+ \dots + B_py_{t-p} + u_t $$
 \item[Sample] {\color{mcxs2}draws from the posterior distribution of} $(A,\Sigma)$ {\color{mcxs2}to get}
 $$ \left\{A^{(s)},\Sigma^{(s)}\right\}_{s=1}^S $$
 \item[Compute] {\color{mcxs2}draws from the posterior distribution of a triangular SVAR system}
-$$ \tilde{B}_0^{(s)} = \text{chol}\left(\left(\Sigma^{(s)}\right)^{-1}\right) \qquad
+$$ \tilde{B}_0^{(s)} = \text{chol}\left(\Sigma^{(s)}, \text{lower} \right)^{-1} \qquad
 \tilde{B}_+^{(s)} = \tilde{B}_0^{(s)}A^{(s)} $$
 \item[Compute or sample] {\color{mcxs2}an orthogonal matrix} $Q^{(s)}$ {\color{mcxs2}that is consistent with the restrictions}
 \item[Compute] {\color{mcxs2}draws of parameter matrices with desired restrictions from the target posterior distribution}
